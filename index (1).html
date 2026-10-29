@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>반아나 마켓 | 반포·잠원 아파트 매매</title>
+<meta name="description" content="반포프로공인중개사사무소 김준한 소장이 직접 확인한 반포동·잠원동 아파트 매매 매물. 허위매물에 지쳤다면, 이젠 반아나 마켓에서.">
+<meta property="og:title" content="반아나 마켓">
+<meta property="og:description" content="김준한 소장이 직접 확인한 반포·잠원 매물">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#ffd21f">
+<!-- 네이버 서치어드바이저 소유 확인: 아래 줄의 주석 표시를 풀고 content 값을 바꿔 넣으세요 -->
+<!-- <meta name="naver-site-verification" content="여기에-값"> -->
+<!-- 구글 서치 콘솔 소유 확인: 아래 줄의 주석 표시를 풀고 content 값을 바꿔 넣으세요 -->
+<!-- <meta name="google-site-verification" content="여기에-값"> -->
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: 시안 C 스플릿. 왼쪽은 바나나색 고정 무대(아파트 한 동), 오른쪽은 흰 바탕의 좁은 읽기 기둥. 휴대폰에선 무대가 위쪽 띠로 바뀜 */
+:root{
+--font:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;
+--bg:#ffffff;--card:#f5f5f7;--card-h:#ececf0;--tx:#1d1d1f;--sub:#6e6e73;--line:#e3e3e8;--pri:#1d1d1f;--pri-t:#ffffff;--acc:#1d1d1f;
+--ok:#fff4c2;--ok-t:#5c4500;--seg:#ececf0;--ring:rgba(29,29,31,.22);
+--ban:#ffd21f;--ban-t:#1d1d1f;--ban-win:#3a3a3e;
+--m-bg:#dff6e8;--m-fg:#0f6b38;--j-bg:#e3ecff;--j-fg:#1f47c9;--g-bg:#fff0c2;--g-fg:#835300;--r-bg:#ffe3e3;--r-fg:#c21f1f;
+--toast-bg:#1d1d1f;--toast-fg:#ffffff;--scrim:rgba(10,10,12,.5)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+--bg:#121214;--card:#1d1d20;--card-h:#26262a;--tx:#f5f5f7;--sub:#a1a1a6;--line:#2c2c30;--pri:#ffd21f;--pri-t:#1d1d1f;--acc:#ffd21f;
+--ok:#3a3110;--ok-t:#ffe37a;--seg:#1d1d20;--ring:rgba(255,210,31,.3);
+--m-bg:#1b3a2a;--m-fg:#7fe0a6;--j-bg:#1f2b55;--j-fg:#9db8ff;--g-bg:#3d3114;--g-fg:#f5c85e;--r-bg:#4a2020;--r-fg:#ff9a9a;
+--toast-bg:#f5f5f7;--toast-fg:#121214}}
+:root[data-theme="dark"]{color-scheme:dark;
+--bg:#121214;--card:#1d1d20;--card-h:#26262a;--tx:#f5f5f7;--sub:#a1a1a6;--line:#2c2c30;--pri:#ffd21f;--pri-t:#1d1d1f;--acc:#ffd21f;
+--ok:#3a3110;--ok-t:#ffe37a;--seg:#1d1d20;--ring:rgba(255,210,31,.3);
+--m-bg:#1b3a2a;--m-fg:#7fe0a6;--j-bg:#1f2b55;--j-fg:#9db8ff;--g-bg:#3d3114;--g-fg:#f5c85e;--r-bg:#4a2020;--r-fg:#ff9a9a;
+--toast-bg:#f5f5f7;--toast-fg:#121214}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--tx);font:400 17px/1.7 var(--font);letter-spacing:-.012em;word-break:keep-all;-webkit-font-smoothing:antialiased}
+
+.page{display:flex;align-items:flex-start;min-height:100vh}
+.stage{flex:1 1 50%;position:sticky;top:0;height:100vh;background:var(--ban);color:var(--ban-t);display:flex;flex-direction:column;justify-content:space-between;padding:28px 32px;overflow:hidden}
+.stage .name{align-self:flex-start;display:inline-block;font-size:clamp(32px,3.4vw,52px);line-height:1.1;font-weight:800;letter-spacing:-.045em;color:var(--ban);background:var(--ban-t);padding:.14em .38em .18em;border-radius:.32em;text-decoration:none}
+.stage .mark{display:inline-block;font-weight:800;letter-spacing:-.04em;color:var(--ban);background:var(--ban-t);padding:.02em .3em .06em;border-radius:.28em;line-height:1.3}
+.stage svg{display:block;width:min(56%,340px);height:auto;margin:0 auto}
+.stage p{margin:0;font-size:clamp(20px,1.9vw,28px);line-height:1.4;font-weight:700;letter-spacing:-.03em;max-width:13em;text-wrap:balance}
+.w{flex:1 1 50%;min-width:0;padding-block:28px 64px;padding-left:max(16px,clamp(16px,5vw,72px));padding-right:max(16px,clamp(16px,5vw,72px))}
+#app{max-width:680px}
+@media (max-width:900px){
+ .page{display:block}
+ .stage{position:relative;height:auto;flex-direction:row;align-items:center;gap:16px;padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+ .stage{flex-wrap:wrap}
+ .stage .name{font-size:26px;align-self:center}
+ .stage svg{width:56px;margin:0 0 0 auto;order:2}
+ .stage p{order:3;flex-basis:100%;font-size:19px;max-width:none}
+ .w{padding-block:32px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+}
+
+h1{font-size:clamp(28px,3.2vw,46px);line-height:1.3;font-weight:700;letter-spacing:-.035em;margin:0;text-wrap:balance}
+h2{font-size:26px;line-height:1.35;font-weight:700;letter-spacing:-.03em;margin:88px 0 18px;text-wrap:balance}
+.lead{margin:20px 0 0;font-size:18px;line-height:1.7;max-width:28em}
+.sub{color:var(--sub);font-size:15.5px;line-height:1.5}
+.hero{margin:0 0 56px}
+.office{margin:0 0 10px;font-size:18px;line-height:1.4;font-weight:700;letter-spacing:-.02em}
+
+.card{background:var(--card);border-radius:20px;padding:24px;margin:10px 0}
+.card.item{display:block;cursor:pointer;color:var(--tx);text-decoration:none;transition:background .15s,transform .15s}
+.card.item:active{transform:scale(.99)}
+@media (hover:hover){.card.item:hover{background:var(--card-h)}}
+.ihead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 16px}
+.ihead .pr{margin-left:auto}
+.ihead>*{min-width:0}
+.iname{font-size:19px;font-weight:700;letter-spacing:-.02em}
+.pr{font-size:26px;font-weight:700;letter-spacing:-.035em;color:var(--acc);white-space:nowrap;font-variant-numeric:tabular-nums}
+.tg{font-weight:600;font-size:16px;margin:8px 0 4px}
+.meta{margin-top:10px}
+.tag{display:inline-block;background:var(--seg);color:var(--tx);border-radius:999px;padding:3px 11px;font-size:13px;font-weight:600;margin-right:6px;line-height:1.5}
+.tag.t-m{background:var(--m-bg);color:var(--m-fg)}.tag.t-j{background:var(--j-bg);color:var(--j-fg)}.tag.t-g{background:var(--g-bg);color:var(--g-fg)}.tag.t-r{background:var(--r-bg);color:var(--r-fg)}
+.tag.t-c{background:var(--tx);color:var(--bg)}
+
+.tabs{display:flex;gap:4px;padding:4px;background:var(--seg);border-radius:999px;margin:0 0 12px}
+.tab{flex:1;min-width:0;text-align:center;padding:12px 4px;border-radius:999px;font-weight:600;font-size:15px;line-height:1.3;cursor:pointer;color:var(--sub);background:none;border:0;font-family:inherit;min-height:44px}
+.tab.on{background:var(--bg);color:var(--tx)}
+
+button,select,input,textarea{font:inherit;color:var(--tx)}
+label{font-size:14.5px;font-weight:600;color:var(--sub);display:block;margin:16px 0 7px}
+select{width:100%;min-height:50px;padding:12px 42px 12px 14px;border:0;border-radius:14px;background:var(--bg);appearance:none;-webkit-appearance:none;
+background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238a8a90' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+select:focus{outline:0;box-shadow:0 0 0 3px var(--ring)}
+.btn{display:block;width:100%;background:var(--pri);color:var(--pri-t);border:0;border-radius:999px;min-height:52px;padding:14px 22px;font-weight:600;font-size:17px;cursor:pointer;text-align:center;text-decoration:none;transition:transform .12s,filter .15s}
+.btn:active{transform:scale(.98)}@media (hover:hover){.btn:hover{filter:brightness(.92)}}
+.btn.g{background:var(--bg);color:var(--tx);box-shadow:inset 0 0 0 1.5px var(--line)}
+.btn.ban{background:var(--ban);color:var(--ban-t)}
+.btn.inl{display:inline-block;width:auto}
+.lnk{background:none;border:0;color:var(--tx);cursor:pointer;font-weight:600;font-size:15.5px;padding:10px 2px;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:10px 18px;border-radius:999px;border:0;background:var(--bg);cursor:pointer;font-weight:500;font-size:15px;min-height:44px}
+.chip.on{background:var(--pri);color:var(--pri-t);font-weight:600}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.grid>*{min-width:0}
+.acts{display:flex;flex-direction:column;gap:8px;margin-top:18px}
+
+table{width:100%;border-collapse:collapse}th,td{padding:13px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+tr:last-child th,tr:last-child td{border-bottom:0}
+th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
+
+.letter{max-width:34em}
+.letter p{margin:0 0 1.15em;font-size:17.5px;line-height:1.85;letter-spacing:-.005em}
+.letter .call{margin:1.6em 0;font-size:20px;line-height:1.6;font-weight:700;letter-spacing:-.025em}
+.letter .note{margin:0;font-size:14.5px;line-height:1.65;letter-spacing:0;color:var(--sub)}
+.letter .sig{margin:2.2em 0 0;font-weight:700;line-height:1.6}
+
+.bk{background:var(--card);border-radius:20px;padding:22px}
+.bk-h{font-size:14px;font-weight:600;color:var(--sub);margin-bottom:12px}
+.bk dl{margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px 20px}.bk dl>div{min-width:0}.bk dl>div.wide{grid-column:1/-1}
+.bk dt{font-size:13px;color:var(--sub)}.bk dd{margin:0;font-weight:600;font-size:15px;overflow-wrap:anywhere}
+
+.contact{background:var(--card);color:var(--tx);border-radius:24px;padding:28px}
+.contact h3{margin:0 0 8px;font-size:22px;font-weight:700;letter-spacing:-.03em;line-height:1.35}
+.contact .btn{background:var(--pri);color:var(--pri-t)}
+.contact .btn.g{background:var(--bg);color:var(--tx);box-shadow:inset 0 0 0 1.5px var(--line)}
+.quote{margin:12px 0 4px;padding:12px 14px;background:var(--bg);border-radius:12px;color:var(--tx);font-size:15px;user-select:all}
+.telbox{display:none;margin-top:10px;padding:14px;border-radius:14px;background:var(--bg);text-align:center;color:var(--tx)}
+.telbox .num{font-size:28px;font-weight:800;margin:6px 0;user-select:all;font-variant-numeric:tabular-nums}
+
+.xl{overflow-x:auto;background:var(--card);border-radius:20px}
+.xt{font-size:15px;font-variant-numeric:tabular-nums}
+.xt th,.xt td{width:auto;padding:13px 12px;vertical-align:middle}
+.xt thead th{color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap}
+.xt tbody tr{cursor:pointer}
+@media (hover:hover){.xt tbody tr:hover td{background:var(--card-h)}}
+.xt td.num,.xt th.num{text-align:right;white-space:nowrap}.xt td.num{font-weight:800}
+
+.ov{position:fixed;inset:0;background:var(--scrim);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.sheet{background:var(--bg);color:var(--tx);width:100%;max-width:520px;border-radius:28px 28px 0 0;padding:24px max(20px,env(safe-area-inset-left,0px)) calc(24px + env(safe-area-inset-bottom,0px))}
+.sheet .top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+#toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--toast-bg);color:var(--toast-fg);padding:13px 20px;border-radius:16px;z-index:30;max-width:90%;font-size:15px;font-weight:500}
+.state{padding:40px 0;color:var(--sub)}
+.demo{margin:20px 0 0;padding:12px 14px;border-radius:14px;background:var(--ok);color:var(--ok-t);font-size:14.5px;line-height:1.5}
+.err{color:var(--r-fg);font-size:14px;margin-top:10px}
+
+/* AI 매물찾기 채팅 */
+.ai{margin:0}
+/* 섹션 제목 띠: 섹션마다 같은 노란 띠로 구분 */
+#app h2{display:flex;align-items:center;background:var(--ban);color:var(--ban-t);font-size:20px;line-height:1.35;font-weight:800;letter-spacing:-.03em;padding:12px 18px;border-radius:14px;margin:64px 0 16px}
+#app .ai h2{margin-top:0}
+.chatbox{background:var(--card);border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.log{display:flex;flex-direction:column;gap:10px;min-height:180px;max-height:600px;overflow-y:auto;padding:8px 6px}
+.bub{max-width:90%;padding:12px 16px;border-radius:20px;font-size:16px;line-height:1.65;white-space:pre-line;overflow-wrap:anywhere}
+.bub.bot{align-self:flex-start;background:var(--bg);border-bottom-left-radius:6px}
+.bub.me{align-self:flex-end;background:var(--pri);color:var(--pri-t);border-bottom-right-radius:6px}
+.bub.wait{color:var(--sub)}
+.cond{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 6px;white-space:normal}
+.cond span{background:var(--ok);color:var(--ok-t);border-radius:999px;padding:3px 11px;font-size:14px;font-weight:600;line-height:1.5}
+.mini{display:flex;justify-content:space-between;gap:12px;align-items:center;width:100%;text-align:left;background:var(--card);border:0;border-radius:14px;padding:12px 14px;margin-top:6px;cursor:pointer;font:inherit;color:var(--tx);white-space:normal}
+@media (hover:hover){.mini:hover{background:var(--card-h)}}
+.mini b{font-size:16px;font-weight:700}
+.mini .s{display:block;font-size:14px;color:var(--sub);margin-top:2px}
+.mini .p{font-weight:700;font-size:18px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.bub .lnk{padding:6px 0;font-size:15px}
+.ask{display:flex;gap:8px}
+.ask input{flex:1;min-width:0;min-height:52px;padding:12px 18px;border:0;border-radius:999px;background:var(--bg);font:inherit;font-size:16px;color:var(--tx);box-shadow:inset 0 0 0 1.5px var(--line)}
+.ask input:focus{outline:0;box-shadow:inset 0 0 0 2px var(--tx)}
+.ask .btn.send{width:56px;min-height:56px;height:56px;padding:0;flex:none;display:inline-flex;align-items:center;justify-content:center;border-radius:50%}
+.ask .btn.send:disabled{opacity:.5;cursor:default}
+.ask input{min-height:56px}
+.aimeta{display:flex;justify-content:space-between;gap:4px 12px;flex-wrap:wrap;font-size:13px;line-height:1.5;color:var(--sub);padding:0 8px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:3px solid var(--ring);outline-offset:2px}
+@media (max-width:420px){.grid{grid-template-columns:1fr}.pr{font-size:23px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:900px){.chatbox{padding:10px;gap:10px}.log{min-height:0;max-height:420px;padding:4px 2px}}
+/* 휴대폰: 첫 화면에서 바로 검색창이 보이도록 위쪽을 촘촘하게 */
+@media (max-width:900px){
+ .stage{padding-block:12px}
+ .stage .name{font-size:21px}
+ .stage svg{width:40px}
+ .stage p{font-size:16px;line-height:1.45}
+ .w{padding-block:18px 48px}
+ .office{font-size:15px;margin-bottom:4px}
+ h1{font-size:24px}
+ .lead{font-size:15.5px;line-height:1.6;margin-top:8px}
+ .hero{margin-bottom:22px}
+ #app h2{font-size:18px;padding:10px 14px;margin-top:44px;margin-bottom:12px}
+ #app .ai h2{margin-top:0}
+ .bub{padding:10px 14px;font-size:15.5px;line-height:1.6}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <aside class="stage" aria-label="반아나 마켓">
+    <a class="name" href="#">반아나 마켓</a>
+    <svg viewBox="0 0 400 520" role="img" aria-label="불 켜진 창이 있는 아파트 한 동 그림">
+      <defs><pattern id="cw" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="#1d1d1f"></rect><rect x="8" y="9" width="24" height="20" fill="#3a3a3e"></rect></pattern></defs>
+      <rect x="80" y="20" width="240" height="480" fill="url(#cw)"></rect>
+      <rect x="88" y="189" width="24" height="20" fill="#ffd21f"></rect>
+      <rect x="208" y="309" width="24" height="20" fill="#ffffff"></rect>
+      <rect x="40" y="500" width="320" height="10" fill="#1d1d1f"></rect>
+    </svg>
+    <p>허위매물에 지쳤다면, 이젠 <span class="mark">반아나 마켓</span>에서.</p>
+  </aside>
+  <main class="w"><div id="app">
+    <div class="hero"><p class="office">반포프로공인중개사사무소</p><h1>김준한 소장이 직접 확인한<br>반포·잠원 매물</h1><p class="lead">아래 검색하기로 지금 바로 매물을 확인하세요.</p></div>
+    <noscript>
+      <h1>반아나 마켓</h1>
+      <p>반포동·잠원동 아파트 매매 매물 — 반포프로공인중개사사무소 김준한 대표 공인중개사</p>
+      <p>서울특별시 서초구 잠원로4길50, 1층 2-125호(잠원동, 메이플자이상가) · 전화 010-4951-2233</p>
+      <p>매물을 보시려면 브라우저에서 자바스크립트를 켜 주세요.</p>
+    </noscript>
+  </div></main>
+</div>
+<div id="toast" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script src="assets/common.js"></script>
+<script src="assets/search.js"></script>
+<script>
+(function () {
+  var B = window.BM, esc = B.esc, price = B.price, py = B.py, lvl = B.lvl, regStr = B.regStr, todayStr = B.todayStr;
+  var PY = B.PY, BANDS = B.BANDS, GAP = B.GAP, HH = B.HH, AGES = B.AGES;
+  var KAKAO = B.cfg.KAKAO || '', TEL = B.cfg.TEL || '', CAFE = B.cfg.CAFE || '', SITE = B.cfg.SITE_NAME || '반아나 마켓';
+  var $ = function (s) { return document.querySelector(s); };
+  var C = [], L = [], BR = {}, demo = false;
+  var E = function () { return { cx: '', area: '', band: '', age: '', hh: '', gap: '' }; };
+  var F = E(), G = E(), searched = false, tab = 'cx', AF = { sort: 'new' };
+
+  var toast = function (t) {
+    var e = $('#toast'); e.textContent = t; e.hidden = false;
+    clearTimeout(toast._t); toast._t = setTimeout(function () { e.hidden = true; }, 3200);
+  };
+  var copyText = function (t, okMsg, failMsg) {
+    try {
+      navigator.clipboard.writeText(t).then(function () { toast(okMsg); }, function () { toast(failMsg); });
+    } catch (e) { toast(failMsg); }
+  };
+
+  var bandOf = function (l) { return B.band(l.price); };
+  var match = function (l) {
+    return (!F.cx || l.cx === F.cx) && (!F.area || B.pyOf(l) === F.area) &&
+      (!F.band || bandOf(l) === F.band) &&
+      (!F.age || B.ageOf(l, C) === F.age) && (!F.hh || B.hOf(l, C) === F.hh) && (!F.gap || l.gap === F.gap);
+  };
+  var opts = function (arr, sel, all) {
+    return '<option value="">' + all + '</option>' + arr.map(function (a) {
+      return '<option value="' + esc(a[0]) + '"' + (String(a[0]) === String(sel) ? ' selected' : '') + '>' + esc(a[1]) + '</option>';
+    }).join('');
+  };
+
+  /* ---------- 공통 조각 ---------- */
+  var hero = function () {
+    return '<div class="hero"><p class="office">반포프로공인중개사사무소</p><h1>김준한 소장이 직접 확인한<br>반포·잠원 매물</h1>' +
+      '<p class="lead">아래 검색하기로 지금 바로 매물을 확인하세요.</p>' +
+      (demo ? '<div class="demo">지금은 샘플 화면입니다. 설명서대로 config.js에 서버 정보를 넣으면 실제 매물이 표시됩니다.</div>' : '') + '</div>';
+  };
+  var tabsHtml = function () {
+    return '<div class="tabs" role="tablist">' + [['cx', '단지로 찾기'], ['all', '매물 전체보기']].map(function (t) {
+      return '<button type="button" role="tab" aria-selected="' + (tab === t[0]) + '" class="tab' + (tab === t[0] ? ' on' : '') + '" data-tab="' + t[0] + '">' + t[1] + '</button>';
+    }).join('') + '</div>';
+  };
+  var brokerCard = function () {
+    var b = BR || {};
+    var rows = [['사무소', b.name, 0], ['대표 공인중개사', b.rep, 0], ['등록번호', b.reg, 0], ['전화', b.tel, 0], ['소재지', b.addr, 1]].filter(function (r) { return r[1]; });
+    return '<h2>중개사 정보</h2><div class="bk"><dl>' + rows.map(function (r) {
+      return '<div' + (r[2] ? ' class="wide"' : '') + '><dt>' + r[0] + '</dt><dd>' + esc(r[1]) + '</dd></div>';
+    }).join('') + '</dl></div>';
+  };
+  var letter = function () {
+    return '<h2>이 사이트를 만든 이유</h2><div class="letter">' +
+      '<p>매물을 알아보다 보면 같은 집에 여러 광고가 붙어 있거나, 이미 거래된 매물의 광고가 몇 달째 남아 있기도 합니다.</p>' +
+      '<p>그래서 제가 직접 확인한 매물만 소개하려고 합니다. 반아나 마켓은 반포·잠원에서 실제로 거래할 수 있는 매물만 모아 둔 공간입니다.</p>' +
+      '<p class="call">이제 반포 입성을 위한 나만의 조건으로,<br>반아나 마켓에서 매물을 확인하세요.</p>' +
+      '<p class="note">* 거래 완료 여부를 실시간으로 확인할 수는 없지만, 최대한 빨리 반영해 업로드하겠습니다.</p>' +
+      '<p class="sig">김준한 드림<br><span class="sub">반포프로공인중개사사무소 대표 공인중개사</span></p></div>';
+  };
+  var tags = function (l) {
+    return '<span class="tag ' + (l.deal === '매매' ? 't-m' : 't-j') + '">' + l.deal + '</span>' +
+      (l.deal === '매매' && l.gap ? '<span class="tag t-g">' + esc(l.gap) + '</span>' : '') +
+      (l.rec ? '<span class="tag t-r">추천</span>' : '') +
+      (regStr(l) ? '<span class="tag t-c">확인 ' + regStr(l).slice(5) + '</span>' : '');
+  };
+  var ptxt = function (l) { return l.pyt || py(l.supply) + '평형'; };
+  var card = function (l) {
+    return '<a class="card item" href="#listing-' + l.id + '" data-id="' + l.id + '">' +
+      '<div class="ihead"><span class="iname">' + esc(l.cx) + ' ' + esc(ptxt(l)) + '</span><span class="pr">' + price(l) + '</span></div>' +
+      (l.tag ? '<div class="tg">' + esc(l.tag) + '</div>' : '') +
+      '<div class="sub">' + (l.bldg ? esc(B.dong(l.bldg)) + ' · ' : '') + '전용 ' + l.area + '㎡ · ' + lvl(l) + ' ' + l.floor + '/' + l.total + '층 · ' + esc(l.dir) + '</div>' +
+      '<div class="meta">' + tags(l) + '</div></a>';
+  };
+  var lbl = function (l) { return l.cx + (l.bldg ? ' ' + B.dong(l.bldg) : '') + ' · ' + l.deal + ' ' + price(l) + ' · ' + ptxt(l) + ' (전용 ' + l.area + '㎡)'; };
+  var inq = function (l) { return '[' + SITE + ' 문의] ' + lbl(l) + (regStr(l) ? ' · 확인 ' + regStr(l) : ''); };
+  var kakaoBtn = function (id, label) {
+    return KAKAO ? '<a id="' + id + '" class="btn" href="' + esc(KAKAO) + '" target="_blank" rel="noopener">' + label + '</a>'
+      : '<button class="btn" id="' + id + '">' + label + '</button>';
+  };
+  var askKakao = function (t) {
+    if (!KAKAO) { toast('오픈채팅 주소가 아직 연결되지 않았습니다'); return; }
+    copyText(t, '문의 내용이 복사되었습니다. 채팅방에 붙여넣기 해 주세요.', '복사가 막혀 있습니다. 문의 문구를 직접 입력해 주세요.');
+  };
+  var telBlock = function (id, boxId, cpId) {
+    if (!TEL) return '';
+    return '<a id="' + id + '" class="btn g" href="tel:' + TEL.replace(/-/g, '') + '">전화 ' + esc(TEL) + '</a>' +
+      '<div id="' + boxId + '" class="telbox">' +
+      '<div>전화 앱이 열리지 않으면 아래 번호로 직접 걸어 주세요</div>' +
+      '<div class="num">' + esc(TEL) + '</div>' +
+      '<button class="btn g" id="' + cpId + '">번호 복사</button></div>';
+  };
+  var bindTel = function (root, id, boxId, cpId) {
+    var t = root.querySelector('#' + id), cp = root.querySelector('#' + cpId);
+    if (t) t.addEventListener('click', function () { root.querySelector('#' + boxId).style.display = 'block'; });
+    if (cp) cp.onclick = function () { copyText(TEL, '번호를 복사했습니다', '번호를 길게 눌러 복사해 주세요'); };
+  };
+  var go = function (id) { location.hash = '#listing-' + id; };
+  var bindItems = function () {
+    document.querySelectorAll('.item').forEach(function (e) { e.onclick = function (ev) { ev.preventDefault(); go(e.dataset.id); }; });
+  };
+  var bindTabs = function () {
+    document.querySelectorAll('[data-tab]').forEach(function (t) {
+      t.onclick = function () { tab = t.dataset.tab; F = E(); G = E(); searched = false; render(); };
+    });
+  };
+
+  /* ---------- 첫 화면 (단지로 찾기 / 조건으로 찾기) ---------- */
+  function home() {
+    var filt = searched || F.cx || F.area || F.band || F.age || F.hh || F.gap;
+    var res = filt ? L.filter(match) : L.filter(function (l) { return l.rec; }).slice(0, 4);
+    $('#app').innerHTML = hero() + aiBox() + '<h2>직접 매물 찾기</h2>' + tabsHtml() +
+      '<div class="card">' +
+      '<label for="fc" style="margin-top:0">단지명</label><select id="fc">' + opts(C.map(function (c) { return [c.n, c.n + ' (' + c.d + ')']; }), G.cx, '전체 단지') + '</select>' +
+      '<div class="grid"><div><label for="fa">평형</label><select id="fa">' + opts(PY, G.area, '전체 평형') + '</select></div>' +
+      '<div><label for="fb">금액대</label><select id="fb">' + opts(BANDS, G.band, '전체 금액') + '</select></div></div>' +
+      '<label for="fg">갭투 여부</label><select id="fg">' + opts(GAP, G.gap, '전체') + '</select>' +
+      '<div class="acts"><button class="btn" id="srch">검색하기</button>' +
+      '<button class="btn g" id="req">직접 의뢰하기</button></div>' +
+      '<button class="lnk" id="rs">조건 초기화</button></div>' +
+      '<h2 id="res">' + (filt ? '검색 결과 ' + res.length + '건' : '추천 매물') + '</h2>' +
+      (res.length ? res.map(card).join('') : '<div class="card sub">' + (filt ? '조건에 맞는 매물이 없습니다. 직접 의뢰하시면 찾아봅니다.' : '등록된 추천 매물이 없습니다.') + '</div>') +
+      letter() + contactBox() + cafeBox() + brokerCard();
+    var on = function (id, k) { var e = $(id); if (e) e.onchange = function (ev) { G[k] = ev.target.value; }; };
+    on('#fc', 'cx'); on('#fa', 'area'); on('#fb', 'band'); on('#fg', 'gap');
+    bindAI();
+    bindTabs();
+    $('#rs').onclick = function () { F = E(); G = E(); searched = false; home(); };
+    $('#srch').onclick = function () { F = Object.assign({}, G); searched = true; home(); var e = $('#res'); if (e) e.scrollIntoView({ behavior: 'smooth' }); };
+    $('#req').onclick = openReq;
+    bindContact();
+    bindItems();
+  }
+
+  /* ---------- AI 매물찾기 채팅 ---------- */
+  var S = window.BMS, AIon = !!(B.sb && B.cfg.AI_ENABLED !== false);
+  var CH = [{ who: 'bot', html: esc('어떤 집을 찾으세요?\n예) 반포 30평대 40억 이하') }], busyAI = false;
+  var bub = function (m) { return '<div class="bub ' + m.who + '">' + (m.who === 'me' ? esc(m.text) : m.html) + '</div>'; };
+  var leftText = function () {
+    return AIon ? '오늘 남은 AI 검색 ' + Math.max(0, S.LIMIT - S.used()) + '회' : '';
+  };
+  var aiBox = function () {
+    return '<section class="ai" aria-labelledby="ai-h"><h2 id="ai-h">반아나 마켓 AI를 통한 매물찾기</h2>' +
+      '<div class="chatbox"><div class="log" id="log" role="log" aria-live="polite">' + CH.map(bub).join('') +
+      (busyAI ? '<div class="bub bot wait">조건을 살펴보는 중이에요…</div>' : '') + '</div>' +
+      '<form class="ask" id="askf" novalidate><label for="askq" class="sr">원하시는 조건</label>' +
+      '<input id="askq" maxlength="' + S.MAXLEN + '" autocomplete="off" enterkeyhint="send" placeholder="원하시는 조건을 적어주세요">' +
+      '<button class="btn send" type="submit" id="askb" aria-label="보내기" title="보내기 (Enter)">' +
+      '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 5v7a3 3 0 0 1-3 3H5"></path><path d="m9 10-5 5 5 5"></path></svg></button></form>' +
+      '<div class="aimeta"><span id="aileft">' + leftText() + '</span>' +
+      (B.cfg.AI_ENABLED !== false ? '<span>이 검색은 생성형 AI(Claude)를 활용합니다.</span>' : '') + '</div></div></section>';
+  };
+  var mini = function (l) {
+    return '<button type="button" class="mini" data-go="' + l.id + '"><span><b>' + esc(l.cx) + ' ' + esc(ptxt(l)) + '</b>' +
+      '<span class="s">' + (l.bldg ? esc(B.dong(l.bldg)) + ' · ' : '') + '전용 ' + l.area + '㎡ · ' + lvl(l) + ' ' + l.floor + '/' + l.total + '층 · ' + esc(l.dir) + (regStr(l) ? ' · 확인 ' + regStr(l).slice(5) : '') + '</span></span>' +
+      '<span class="p">' + price(l) + '</span></button>';
+  };
+  var botText = function (t) { return { who: 'bot', html: esc(t) }; };
+  async function answer(q) {
+    var it = S.intro(q);
+    if (it) return botText(it === 'kim' ? B.cfg.INTRO_KIM : B.cfg.INTRO_NAME);
+    var d = AIon ? await S.askAI(q) : { type: 'off' }, note = '', f;
+    if (d.type === 'about_kim') return botText(B.cfg.INTRO_KIM);
+    if (d.type === 'about_name') return botText(B.cfg.INTRO_NAME);
+    if (d.type === 'other') return botText(B.cfg.OFFTOPIC);
+    if (d.type === 'search') f = S.clean(d.filters, C);
+    else {
+      if (d.type === 'limit') note = '오늘 AI 검색 ' + S.LIMIT + '회를 모두 쓰셔서, 단어 검색으로 찾았어요.';
+      else if (d.type === 'error' || d.type === 'busy') note = '지금은 AI 연결이 원활하지 않아 단어 검색으로 찾았어요.';
+      f = S.parse(q, C);
+    }
+    var head = note ? '<span style="color:var(--sub);font-size:14px">' + esc(note) + '</span>\n' : '';
+    if (S.empty(f)) return { who: 'bot', html: head + esc('찾으시는 조건을 알아듣지 못했어요.\n단지, 평형, 금액처럼 조건을 적어 주세요.\n예) 잠원 20평대 30억 이하') };
+    var r = S.apply(f, L, C), list = r.list;
+    var html = head + '검색 키워드<div class="cond">' + S.chips(f).map(function (c) { return '<span>' + esc(c) + '</span>'; }).join('') + '</div>';
+    if (r.dropped.length) html += esc('“' + r.dropped.join('”, “') + '” 설명이 있는 매물은 없어서, 나머지 조건으로 찾았어요.') + '\n';
+    if (list.length) {
+      html += '<b>' + list.length + '건</b>을 찾았어요.' + list.slice(0, 8).map(mini).join('');
+      if (list.length > 8) html += '\n' + esc('그 밖에 ' + (list.length - 8) + '건이 더 있어요. 조건을 조금 더 좁혀 보세요.');
+    } else {
+      html += esc('아직 조건에 맞는 매물이 없어요.') + '\n<button type="button" class="lnk" data-req="1">직접 의뢰하면 김준한 소장이 찾아봅니다</button>';
+    }
+    return { who: 'bot', html: html };
+  }
+  var drawChat = function () {
+    var lg = $('#log'); if (!lg) return;
+    lg.innerHTML = CH.map(bub).join('') + (busyAI ? '<div class="bub bot wait">조건을 살펴보는 중이에요…</div>' : '');
+    lg.scrollTop = lg.scrollHeight;
+    var lf = $('#aileft'); if (lf) lf.textContent = leftText();
+    lg.querySelectorAll('[data-go]').forEach(function (b) { b.onclick = function () { go(b.dataset.go); }; });
+    lg.querySelectorAll('[data-req]').forEach(function (b) { b.onclick = openReq; });
+  };
+  var bindAI = function () {
+    var fm = $('#askf'); if (!fm) return;
+    drawChat();
+    fm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var inp = $('#askq'), q = inp.value.trim().slice(0, S.MAXLEN);
+      if (!q || busyAI) return;
+      CH.push({ who: 'me', text: q }); inp.value = ''; busyAI = true; $('#askb').disabled = true; drawChat();
+      var rep;
+      try { rep = await answer(q); } catch (x) { console.error(x); rep = botText('잠시 문제가 생겼어요. 다시 한 번 보내 주세요.'); }
+      busyAI = false; CH.push(rep); if (CH.length > 40) CH.splice(1, CH.length - 40);
+      var b2 = $('#askb'); if (b2) b2.disabled = false;
+      drawChat();
+      var i2 = $('#askq'); if (i2) i2.focus();
+    });
+  };
+
+  /* ---------- 문의 상자 (첫 화면) ---------- */
+  var contactBox = function () {
+    return '<h2>직접 소통하고 싶다면!</h2><div class="contact">' +
+      '<p style="margin:0 0 16px">직접 상담을 통해 나에게 맞는 집으로 반포 입성을 도와드립니다.</p>' +
+      '<div class="acts" style="margin-top:0">' + kakaoBtn('h_chat', '카카오톡 오픈채팅으로 문의') + telBlock('h_tel', 'h_box', 'h_cp') + '</div></div>';
+  };
+  var cafeBox = function () {
+    if (!CAFE) return '';
+    return '<h2>반아나 카페</h2><div class="card"><p style="margin:0 0 16px">김준한 소장의 코멘트와 반포 부동산 소식을 알리는 반아나 톡!을 통해 다양한 정보를 얻을 수 있는 공간입니다.</p>' +
+      '<a class="btn" href="' + esc(CAFE) + '" target="_blank" rel="noopener">반아나 네이버 카페 가기</a></div>';
+  };
+  var bindContact = function () {
+    var root = $('#app'), c = $('#h_chat');
+    if (c) c.addEventListener('click', function () { askKakao('[' + SITE + ' 문의] 직접 의뢰'); });
+    bindTel(root, 'h_tel', 'h_box', 'h_cp');
+  };
+
+  /* ---------- 매물 전체보기 ---------- */
+  function allView() {
+    var rows = L.slice().sort(function (a, b) {
+      if (AF.sort === 'new') return (b.ts || '').localeCompare(a.ts || '') || (b.id - a.id);
+      if (AF.sort === 'hi') return b.price - a.price;
+      return a.price - b.price;
+    });
+    $('#app').innerHTML = hero() + aiBox() + '<h2>직접 매물 찾기</h2>' + tabsHtml() +
+      '<div class="card"><label style="margin-top:0">정렬</label><div class="chips">' +
+      [['new', '최신 확인순'], ['hi', '금액 높은순'], ['lo', '금액 낮은순']].map(function (s) { return '<button type="button" class="chip' + (AF.sort === s[0] ? ' on' : '') + '" data-asort="' + s[0] + '">' + s[1] + '</button>'; }).join('') + '</div>' +
+      '</div>' +
+      '<h2>전체 매물 ' + rows.length + '건</h2>' +
+      (rows.length ? '<div class="xl"><table class="xt"><thead><tr><th>단지</th><th>평형</th><th>층</th><th class="num">금액</th><th>확인일</th></tr></thead><tbody>' +
+        rows.map(function (l) {
+          return '<tr data-id="' + l.id + '"><td>' + esc(l.cx) + '</td><td>' + esc(ptxt(l)) +
+            '</td><td>' + l.floor + '/' + l.total + '</td><td class="num">' + price(l) + '</td><td style="white-space:nowrap">' + regStr(l).slice(2) + '</td></tr>';
+        }).join('') + '</tbody></table></div>' : '<div class="card sub">등록된 매물이 없습니다.</div>') + brokerCard();
+    bindAI();
+    bindTabs();
+    document.querySelectorAll('[data-asort]').forEach(function (c) { c.onclick = function () { AF.sort = c.dataset.asort; allView(); }; });
+    document.querySelectorAll('.xt tbody tr').forEach(function (r) { r.onclick = function () { go(r.dataset.id); }; });
+  }
+
+  /* ---------- 매물 상세 ---------- */
+  function detail(l) {
+    var c = C.find(function (x) { return x.n === l.cx; }) || { a: '', d: '' };
+    var others = L.filter(function (x) { return x.cx === l.cx && x.deal === l.deal && x.id !== l.id; });
+    var rows = [['소재지', [(l.addr || c.a || '서울 서초구 ' + c.d), l.cx, B.dong(l.bldg)].filter(Boolean).join(' ')], ['중개대상물 종류', '아파트'], ['거래형태', l.deal]]
+      .concat(l.deal === '매매' && l.gap ? [['갭투 여부', l.gap === '갭투' ? '갭투 (임차인 있음)' : '입주 (실입주 가능)']] : [])
+      .concat([['금액', price(l)], ['평형', ptxt(l)],
+        ['면적', '전용 ' + l.area + '㎡ / 공급 ' + l.supply + '㎡ (공급 약 ' + py(l.supply) + '평)'],
+        ['층', lvl(l) + ' (해당 ' + l.floor + '층 / 총 ' + l.total + '층)'], ['입주가능일', l.moveIn],
+        ['방 / 욕실', l.rooms + '개 / ' + l.baths + '개'], ['사용승인일(준공)', l.approval], ['주차대수', l.parking],
+        ['관리비', '월 약 ' + l.mgmt + '만원'], ['방향', l.dir]])
+      .concat(l.school ? [['학군', l.school]] : []);
+    document.title = l.cx + ' ' + l.deal + ' ' + price(l) + ' | ' + SITE;
+    $('#app').innerHTML = '<a class="lnk" id="bk" href="#">← 목록으로</a>' +
+      '<div class="hero" style="margin-top:16px"><div class="meta" style="margin:0 0 14px">' + tags(l) + '</div>' +
+      '<h1>' + price(l) + '</h1><p class="lead" style="margin-top:12px">' + esc(l.cx) + ' ' + esc(ptxt(l)) + ' · 전용 ' + l.area + '㎡</p>' +
+      (l.tag ? '<p class="sub" style="margin:6px 0 0">' + esc(l.tag) + '</p>' : '') + '</div>' +
+      '<div class="card"><table>' + rows.map(function (r) { return '<tr><th>' + r[0] + '</th><td>' + esc(r[1]) + '</td></tr>'; }).join('') + '</table></div>' +
+      '<h2>중개사 설명</h2><div class="letter"><p style="white-space:pre-wrap">' + esc(l.desc || '-') + '</p></div>' +
+      '<h2>이 매물 문의하기</h2><div class="contact">' + kakaoBtn('chat', '카카오톡 오픈채팅으로 문의') +
+      '<p style="margin:12px 0 0;font-size:15px">누르면 아래 문구가 복사됩니다. 채팅방에 붙여넣으시면 어떤 매물인지 바로 확인합니다.</p>' +
+      '<div class="quote">' + esc(inq(l)) + '</div>' +
+      '<div class="acts">' + telBlock('tel', 'telbox', 'cp') + '</div>' +
+      '<button class="lnk" id="cplink">이 매물 링크 복사</button></div>' +
+      '<h2>이 단지의 다른 ' + l.deal + ' 매물 (' + others.length + ')</h2>' +
+      (others.length ? others.map(card).join('') : '<div class="card sub">이 단지에 다른 ' + l.deal + ' 매물이 없습니다.</div>') + brokerCard();
+    var root = $('#app');
+    bindTel(root, 'tel', 'telbox', 'cp');
+    $('#chat').addEventListener('click', function () { askKakao(inq(l)); });
+    $('#cplink').onclick = function () { copyText(location.href, '이 매물 링크를 복사했습니다', '주소창의 주소를 직접 복사해 주세요'); };
+    bindItems();
+  }
+
+  /* ---------- 직접 의뢰하기 팝업 ---------- */
+  function openReq() {
+    var o = document.createElement('div'); o.className = 'ov';
+    o.innerHTML = '<div class="sheet" role="dialog" aria-modal="true" aria-label="직접 의뢰하기"><div class="top"><h2 style="margin:0">직접 의뢰하기</h2><button class="lnk" id="x">닫기</button></div>' +
+      '<p class="sub">찾는 매물이 없거나 직접 상담을 원하시면 편하게 문의해 주세요. 원하는 조건으로 직접 찾아봅니다.</p>' +
+      '<div class="acts">' + kakaoBtn('o_chat', '카카오톡 오픈채팅으로 문의') + telBlock('o_tel', 'o_box', 'o_cp') + '</div></div>';
+    document.body.appendChild(o);
+    var close = function () { o.remove(); };
+    o.onclick = function (e) { if (e.target === o) close(); };
+    o.querySelector('#x').onclick = close;
+    o.querySelector('#o_chat').addEventListener('click', function () { askKakao('[' + SITE + ' 문의] 직접 의뢰'); });
+    bindTel(o, 'o_tel', 'o_box', 'o_cp');
+  }
+
+  /* ---------- 화면 전환 ---------- */
+  function render() { if (tab === 'all') allView(); else home(); }
+  function route() {
+    var m = /^#listing-(\d+)$/.exec(location.hash);
+    var l = m && L.find(function (x) { return x.id === +m[1]; });
+    if (l) { detail(l); return; }
+    document.title = SITE + ' | 반포·잠원 아파트 매매';
+    render();
+  }
+  window.addEventListener('hashchange', function () { route(); window.scrollTo(0, 0); });
+
+  async function boot() {
+    $('#app').innerHTML = hero() + '<div class="state">매물을 불러오는 중입니다…</div>';
+    try {
+      var d = await B.loadData();
+      C = d.C; L = d.L; BR = d.B; demo = d.demo;
+      route();
+    } catch (e) {
+      console.error(e);
+      $('#app').innerHTML = hero() + '<div class="card state">매물 정보를 불러오지 못했습니다.<br>잠시 후 다시 시도해 주세요.<br><br><button class="btn inl" id="retry">다시 불러오기</button></div>';
+      $('#retry').onclick = boot;
+    }
+  }
+  boot();
+})();
+</script>
+</body>
+</html>
