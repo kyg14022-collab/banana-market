@@ -102,7 +102,11 @@ Deno.serve(async (req) => {
 
     const r = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
-      headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+      headers: {
+        "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json",
+        // 워크스페이스를 지정하지 않고 만든 키라면 Secrets 에 AI_WORKSPACE_ID 를 넣으면 함께 보냅니다
+        ...(Deno.env.get("AI_WORKSPACE_ID") ? { "anthropic-workspace-id": Deno.env.get("AI_WORKSPACE_ID")! } : {}),
+      },
       body: JSON.stringify({
         model: MODEL,
         max_tokens: 300,
