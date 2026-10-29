@@ -35,4 +35,7 @@ $$;
 revoke all on function public.touch_listing(bigint) from public, anon;
 grant execute on function public.touch_listing(bigint) to authenticated;
 
+-- 사이트가 새 칸을 바로 알아보도록 서버에 알림
+notify pgrst, 'reload schema';
+
 -- 끝. "Success. No rows returned" 가 나오면 정상입니다.
