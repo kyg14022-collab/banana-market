@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>반아나 마켓 관리자</title>
+<link rel="icon" href="../assets/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: 손님 화면과 같은 바나나·잉크 토큰. 위쪽 바나나 띠 + 흰 작업 영역, 탭 3개(매물·단지·중개사), 목록과 입력 폼 */
+:root{
+--font:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;
+--bg:#ffffff;--card:#f5f5f7;--card-h:#ececf0;--field:#ffffff;--tx:#1d1d1f;--sub:#6e6e73;--line:#e3e3e8;--pri:#1d1d1f;--pri-t:#ffffff;
+--ok:#fff4c2;--ok-t:#5c4500;--seg:#ececf0;--ring:rgba(29,29,31,.22);--ban:#ffd21f;--ban-t:#1d1d1f;
+--m-bg:#dff6e8;--m-fg:#0f6b38;--g-bg:#fff0c2;--g-fg:#835300;--r-bg:#ffe3e3;--r-fg:#c21f1f;--toast-bg:#1d1d1f;--toast-fg:#ffffff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+--bg:#121214;--card:#1d1d20;--card-h:#26262a;--field:#121214;--tx:#f5f5f7;--sub:#a1a1a6;--line:#2c2c30;--pri:#ffd21f;--pri-t:#1d1d1f;
+--ok:#3a3110;--ok-t:#ffe37a;--seg:#1d1d20;--ring:rgba(255,210,31,.3);
+--m-bg:#1b3a2a;--m-fg:#7fe0a6;--g-bg:#3d3114;--g-fg:#f5c85e;--r-bg:#4a2020;--r-fg:#ff9a9a;--toast-bg:#f5f5f7;--toast-fg:#121214}}
+:root[data-theme="dark"]{color-scheme:dark;
+--bg:#121214;--card:#1d1d20;--card-h:#26262a;--field:#121214;--tx:#f5f5f7;--sub:#a1a1a6;--line:#2c2c30;--pri:#ffd21f;--pri-t:#1d1d1f;
+--ok:#3a3110;--ok-t:#ffe37a;--seg:#1d1d20;--ring:rgba(255,210,31,.3);
+--m-bg:#1b3a2a;--m-fg:#7fe0a6;--g-bg:#3d3114;--g-fg:#f5c85e;--r-bg:#4a2020;--r-fg:#ff9a9a;--toast-bg:#f5f5f7;--toast-fg:#121214}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--tx);font:400 16px/1.65 var(--font);letter-spacing:-.012em;word-break:keep-all;-webkit-font-smoothing:antialiased}
+
+.bar{background:var(--ban);color:var(--ban-t);padding-block:18px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.bar-in{max-width:980px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.mark{display:inline-block;font-size:24px;line-height:1.1;font-weight:800;letter-spacing:-.045em;color:var(--ban);background:var(--ban-t);padding:.14em .38em .18em;border-radius:.32em}
+.bar .role{font-size:17px;font-weight:700}
+.bar .sp{flex:1}
+.bar a,.bar button{color:var(--ban-t);font:inherit;font-size:15px;font-weight:600;background:none;border:0;cursor:pointer;padding:10px 4px;text-decoration:underline;text-underline-offset:3px}
+@media (max-width:480px){.bar{padding-block:12px}.bar-in{gap:8px;flex-wrap:nowrap}.mark{font-size:19px}.bar .role{font-size:15px}.bar a,.bar button{font-size:14px;padding:10px 2px;white-space:nowrap}}
+
+.w{max-width:1012px;margin:0 auto;padding-block:32px 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:clamp(28px,3vw,38px);line-height:1.3;font-weight:700;letter-spacing:-.035em;margin:0;text-wrap:balance}
+h2{font-size:22px;line-height:1.35;font-weight:700;letter-spacing:-.03em;margin:0;text-wrap:balance}
+h3{font-size:17px;font-weight:700;margin:28px 0 4px;letter-spacing:-.02em}
+.sub{color:var(--sub);font-size:15px;line-height:1.55}
+.note{margin:16px 0 0;padding:12px 16px;border-radius:14px;background:var(--ok);color:var(--ok-t);font-size:14.5px;line-height:1.55}
+
+.tabs{display:flex;gap:4px;padding:4px;background:var(--seg);border-radius:999px;margin:28px 0 28px;max-width:520px}
+.tab{flex:1;min-width:0;padding:11px 4px;border-radius:999px;font:inherit;font-weight:600;font-size:15px;cursor:pointer;color:var(--sub);background:none;border:0;min-height:44px}
+.tab.on{background:var(--bg);color:var(--tx)}
+
+.head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;background:var(--pri);color:var(--pri-t);border:0;border-radius:999px;min-height:48px;padding:12px 22px;font:inherit;font-weight:600;font-size:16px;cursor:pointer;text-decoration:none;transition:transform .12s,filter .15s}
+.btn:active{transform:scale(.98)}@media (hover:hover){.btn:hover{filter:brightness(.92)}}
+.btn.g{background:var(--bg);color:var(--tx);box-shadow:inset 0 0 0 1.5px var(--line)}
+.btn.ban{background:var(--ban);color:var(--ban-t)}
+.btn.full{width:100%}
+.lnk{background:none;border:0;font:inherit;font-size:15px;font-weight:600;color:var(--tx);cursor:pointer;padding:8px 6px;min-height:40px;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line)}
+.lnk.danger{color:var(--r-fg)}
+
+.rows{display:flex;flex-direction:column;gap:8px}
+.row{background:var(--card);border-radius:18px;padding:18px 20px;display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px 20px;align-items:center}
+.row .nm{font-size:18px;font-weight:700;letter-spacing:-.02em}
+.row .pr{font-size:22px;font-weight:700;letter-spacing:-.035em;white-space:nowrap;font-variant-numeric:tabular-nums}
+.row .acts{display:flex;gap:2px;flex-wrap:wrap;justify-content:flex-end}
+.row.hl{box-shadow:inset 0 0 0 2px var(--ban)}
+.tag{display:inline-block;border-radius:999px;padding:2px 10px;font-size:13px;font-weight:600;margin-right:6px;line-height:1.5;background:var(--seg)}
+.tag.t-m{background:var(--m-bg);color:var(--m-fg)}.tag.t-g{background:var(--g-bg);color:var(--g-fg)}.tag.t-r{background:var(--r-bg);color:var(--r-fg)}.tag.t-c{background:var(--tx);color:var(--bg)}
+.confirm{grid-column:1/-1;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;border-radius:12px;background:var(--r-bg);color:var(--r-fg);font-size:15px;font-weight:600}
+.confirm .btn{min-height:40px;padding:8px 16px;font-size:15px}
+.confirm .btn.del{background:var(--r-fg);color:var(--bg)}
+@media (max-width:640px){.row{grid-template-columns:minmax(0,1fr) auto}.row .acts{grid-column:1/-1;justify-content:flex-start}}
+
+.form{background:var(--card);border-radius:22px;padding:24px;margin-bottom:28px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 14px}.grid>*{min-width:0}
+.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:760px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:440px){.grid,.grid.two{grid-template-columns:minmax(0,1fr)}}
+.span{grid-column:1/-1}
+label{display:block;font-size:14px;font-weight:600;color:var(--sub);margin:16px 0 6px}
+input,select,textarea{width:100%;font:inherit;color:var(--tx);min-height:48px;padding:11px 14px;border:0;border-radius:12px;background:var(--field);box-shadow:inset 0 0 0 1.5px var(--line)}
+textarea{line-height:1.6;min-height:120px}
+select{appearance:none;-webkit-appearance:none;padding-right:40px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238a8a90' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+input:focus,select:focus,textarea:focus{outline:0;box-shadow:inset 0 0 0 2px var(--tx)}
+.chk{display:flex;align-items:center;gap:10px;margin-top:18px;font-weight:600;color:var(--tx);font-size:15.5px}
+.chk input{width:22px;min-height:22px;height:22px;box-shadow:none;accent-color:#1d1d1f}
+.fbtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.err{margin-top:12px;color:var(--r-fg);font-weight:600;font-size:15px}
+
+.login{max-width:420px;margin:56px auto 0}
+.login .form{margin-top:24px}
+#toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--toast-bg);color:var(--toast-fg);padding:13px 20px;border-radius:16px;z-index:30;max-width:90%;font-size:15px;font-weight:500}
+:focus-visible{outline:3px solid var(--ring);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="bar-in">
+  <span class="mark">반아나 마켓</span><span class="role">관리자</span><span class="sp"></span>
+  <a href="../" target="_blank" rel="noopener">손님 화면 보기</a>
+  <button type="button" id="logout" hidden>로그아웃</button>
+</div></header>
+<main class="w" id="app"><p class="sub" style="padding:40px 0">불러오는 중입니다…</p></main>
+<div id="toast" hidden></div>
+<noscript><p style="padding:16px">관리자 화면을 쓰려면 브라우저에서 자바스크립트를 켜 주세요.</p></noscript>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="../config.js"></script>
+<script src="../assets/common.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

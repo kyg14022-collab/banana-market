@@ -4,8 +4,7 @@
    ============================================================ */
 window.APP_CONFIG = {
   /* Supabase > Project Settings > API 에서 복사한 값 */
-  SUPABASE_URL: 'https://ywvmvhygqjtvbbqdxuyf.supabase.co
-',
+  SUPABASE_URL: 'https://ywvmvhygqjtvbbqdxuyf.supabase.co',
   SUPABASE_ANON_KEY: 'sb_publishable_PkHWD1OeDjd5CFrcpcRNQw_MxtC8RYP',   /* anon key 또는 publishable key (secret/service_role 키는 절대 넣지 마세요) */
 
   /* 손님 문의 연결 */
