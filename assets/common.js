@@ -23,6 +23,7 @@
   };
   var py = function (m) { return Math.round(m / 3.3058); };
   var lvl = function (l) {
+    if (l.flv) return l.flv;
     var r = l.floor / l.total;
     return r <= 1 / 3 ? '저층' : r <= 2 / 3 ? '중층' : '고층';
   };
@@ -67,6 +68,11 @@
   };
   /* 동 표기: '101' → '101동' */
   var dong = function (v) { v = String(v || '').trim(); return !v ? '' : /동$/.test(v) ? v : v + '동'; };
+  /* 층 표기: 숫자로 올린 매물은 '중층 20/35층', 저·중·고로만 올린 매물은 '고층 · 총 35층' */
+  var hasNo = function (l) { return !l.flv && l.floor != null && l.floor !== ''; };
+  var floorTxt = function (l) { return hasNo(l) ? lvl(l) + ' ' + l.floor + '/' + l.total + '층' : lvl(l) + ' · 총 ' + l.total + '층'; };
+  var floorShort = function (l) { return hasNo(l) ? l.floor + '/' + l.total : lvl(l) + '/' + l.total; };
+  var floorDetail = function (l) { return hasNo(l) ? lvl(l) + ' (해당 ' + l.floor + '층 / 총 ' + l.total + '층)' : lvl(l) + ' (총 ' + l.total + '층)'; };
   var todayStr = function () {
     var t = new Date();
     return t.getFullYear() + '.' + String(t.getMonth() + 1).padStart(2, '0') + '.' + String(t.getDate()).padStart(2, '0');
@@ -93,7 +99,7 @@
       id: r.id, cid: r.complex_id, cx: c.n || '', addr: r.address || '',
       deal: r.deal, price: Number(r.price),
       area: Number(r.exclusive_area), supply: Number(r.supply_area),
-      pyc: r.py_cat, pyt: r.py_text, floor: r.floor_no, total: r.total_floors,
+      pyc: r.py_cat, pyt: r.py_text, floor: r.floor_no, flv: r.floor_level || '', total: r.total_floors,
       moveIn: r.move_in, rooms: r.rooms, baths: r.baths, approval: r.approval_date || '',
       parking: r.parking, mgmt: r.mgmt_fee, dir: r.direction, gap: r.gap || '',
       tag: r.tagline || '', desc: r.description || '', school: r.school || '', bldg: r.building || '', rec: !!r.recommended,
@@ -141,7 +147,7 @@
   window.BM = {
     cfg: cfg, configured: configured, sb: sb, esc: esc, won: won, price: price, py: py, lvl: lvl,
     DIRS: DIRS, PY: PY, BANDS: BANDS, GAP: GAP, HH: HH, AGES: AGES,
-    dong: dong, band: band, pyOf: pyOf, hOf: hOf, ageOf: ageOf, yearsOf: yearsOf,
+    dong: dong, floorTxt: floorTxt, floorShort: floorShort, floorDetail: floorDetail, band: band, pyOf: pyOf, hOf: hOf, ageOf: ageOf, yearsOf: yearsOf,
     todayStr: todayStr, kstDate: kstDate, regStr: regStr, loadData: loadData
   };
 })();

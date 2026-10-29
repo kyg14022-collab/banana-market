@@ -21,6 +21,7 @@
   var why = function (e) {
     var m = (e && (e.message || e.error_description)) || '';
     if (/row-level security|permission denied|42501/i.test(m + (e && e.code))) return '관리자 권한이 없는 계정입니다. supabase-setup.sql의 관리자 이메일과 로그인 이메일이 같은지 확인해 주세요.';
+    if (/schema cache|PGRST204|column .* does not exist|null value in column "floor_no"/i.test(m)) return '서버 설정이 최신이 아니에요. Supabase SQL Editor에서 안내드린 업데이트 SQL을 실행해 주세요.';
     if (/foreign key|23503/i.test(m + (e && e.code))) return '이 단지에 등록된 매물이 있어 처리할 수 없습니다. 매물을 먼저 정리해 주세요.';
     if (/duplicate|unique|23505/i.test(m + (e && e.code))) return '같은 이름의 단지가 이미 있습니다.';
     if (/fetch|network/i.test(m)) return '인터넷 연결 또는 서버 주소를 확인해 주세요.';
@@ -30,14 +31,16 @@
   /* ---------- 서버 ↔ 화면 변환 ---------- */
   var fromL = function (r) {
     return { id: r.id, cid: r.complex_id, price: Number(r.price), area: Number(r.exclusive_area), supply: Number(r.supply_area), pyc: r.py_cat, pyt: r.py_text,
-      floor: r.floor_no, total: r.total_floors, moveIn: r.move_in, rooms: r.rooms, baths: r.baths, approval: r.approval_date || '', parking: r.parking,
+      floor: r.floor_no == null ? '' : r.floor_no, flv: r.floor_level || '', total: r.total_floors, moveIn: r.move_in, rooms: r.rooms, baths: r.baths, approval: r.approval_date || '', parking: r.parking,
       mgmt: r.mgmt_fee, dir: r.direction, gap: r.gap || '', tag: r.tagline || '', desc: r.description || '', school: r.school || '', bldg: r.building || '', rec: !!r.recommended, reg: B.kstDate(r.checked_at || r.created_at) };
   };
   var toL = function (l) {
     return { complex_id: l.cid, deal: '매매', price: l.price, exclusive_area: l.area, supply_area: l.supply, py_cat: l.pyc, py_text: l.pyt,
-      floor_no: l.floor, total_floors: l.total, move_in: l.moveIn, rooms: l.rooms, baths: l.baths, approval_date: l.approval, parking: l.parking,
+      floor_no: l.flv ? null : l.floor, total_floors: l.total, move_in: l.moveIn, rooms: l.rooms, baths: l.baths, approval_date: l.approval, parking: l.parking,
       mgmt_fee: l.mgmt, direction: l.dir, gap: l.gap || null, tagline: l.tag || null, description: l.desc || null, school: l.school || null, building: l.bldg || null, recommended: !!l.rec };
   };
+  /* 저·중·고 표기는 쓸 때만 서버에 보냄 (업데이트 SQL 실행 전에도 숫자 층 등록은 그대로 되도록) */
+  var toLx = function (l) { var o = toL(l); if (l.flv || l.wasFlv) o.floor_level = l.flv || null; return o; };
   var fromC = function (r) { return { id: r.id, n: r.name, d: r.dong, h: r.households || 0, ap: r.approval_date || '', a: r.address || '' }; };
   var toC = function (c) { return { name: c.n, dong: c.d, households: c.h || null, approval_date: c.ap || null, address: c.a || null }; };
 
@@ -63,8 +66,8 @@
         S.aiToday = u.error ? null : ((u.data && u.data.hits) || 0);
       } catch (e) { S.aiToday = null; }
     },
-    addL: async function (l) { var r = await sb.from('listings').insert(toL(l)).select().single(); if (r.error) throw r.error; return fromL(r.data); },
-    saveL: async function (id, l) { var r = await sb.from('listings').update(toL(l)).eq('id', id).select().single(); if (r.error) throw r.error; return fromL(r.data); },
+    addL: async function (l) { var r = await sb.from('listings').insert(toLx(l)).select().single(); if (r.error) throw r.error; return fromL(r.data); },
+    saveL: async function (id, l) { var r = await sb.from('listings').update(toLx(l)).eq('id', id).select().single(); if (r.error) throw r.error; return fromL(r.data); },
     recL: async function (id, v) { var r = await sb.from('listings').update({ recommended: v }).eq('id', id).select().single(); if (r.error) throw r.error; },
     touchL: async function (id) { var r = await sb.rpc('touch_listing', { p_id: id }); if (r.error) throw r.error; if (!r.data) throw { message: 'permission denied' }; return B.kstDate(r.data); },
     delL: async function (id) { var r = await sb.from('listings').delete().eq('id', id).select(); if (r.error) throw r.error; if (!r.data || !r.data.length) throw { message: 'permission denied' }; },
@@ -150,7 +153,9 @@
       '<div><label for="f_pyc">평형 범주 (검색용)</label><select id="f_pyc"><option value="">선택</option>' + opts(PY, l.pyc) + '</select></div>' +
       f('f_pyt', '평형 표기', l.pyt, 'text', ' placeholder="예: 34평형"') +
       '<div><label for="f_dir">방향</label><select id="f_dir">' + opts(DIRS, l.dir) + '</select></div>' +
-      f('f_floor', '해당 층', l.floor, 'number', ' inputmode="numeric"') +
+      '<div><label for="f_fmode">해당 층 (숫자 또는 저·중·고)</label><div style="display:flex;gap:8px">' +
+        '<select id="f_fmode" style="flex:0 0 46%">' + opts([['', '숫자로'], ['저층', '저층'], ['중층', '중층'], ['고층', '고층']], l.flv || '') + '</select>' +
+        '<input id="f_floor" type="number" inputmode="numeric" aria-label="해당 층 숫자" placeholder="예: 12" value="' + esc(l.flv ? '' : l.floor) + '"' + (l.flv ? ' hidden' : '') + '></div></div>' +
       f('f_total', '총 층수', l.total, 'number', ' inputmode="numeric"') +
       f('f_moveIn', '입주가능일', l.moveIn, 'text', ' placeholder="즉시 / 2026-12-01 / 협의"') +
       f('f_rooms', '방 개수', l.rooms, 'number', ' inputmode="numeric"') +
@@ -173,7 +178,7 @@
       (rows.length ? '<div class="rows">' + rows.map(function (l) {
         var c = cx(l.cid);
         return '<div class="row' + (flash === l.id ? ' hl' : '') + '"><div><div class="nm">' + esc(c.n) + (l.bldg ? ' ' + esc(B.dong(l.bldg)) : ' <span style="color:var(--r-fg);font-size:14px">동 미입력</span>') + ' ' + esc(l.pyt) + '</div>' +
-          '<div class="sub">전용 ' + l.area + '㎡ · ' + l.floor + '/' + l.total + '층 · ' + esc(l.dir) + (l.tag ? ' · ' + esc(l.tag) : '') + '</div>' +
+          '<div class="sub">전용 ' + l.area + '㎡ · ' + esc(B.floorTxt(l)) + ' · ' + esc(l.dir) + (l.tag ? ' · ' + esc(l.tag) : '') + '</div>' +
           '<div style="margin-top:6px"><span class="tag t-m">매매</span>' + (l.gap ? '<span class="tag t-g">' + esc(l.gap) + '</span>' : '') + (l.rec ? '<span class="tag t-r">추천</span>' : '') + (l.reg ? '<span class="tag t-c">확인 ' + md(l.reg) + '</span>' : '') + '</div></div>' +
           '<div class="pr">' + won(l.price) + '</div>' +
           '<div class="acts"><button class="lnk" data-touch="' + l.id + '"' + (l.reg === today() ? ' title="오늘 이미 확인했어요"' : '') + '>확인일 갱신</button><button class="lnk" data-edit="' + l.id + '">수정</button><button class="lnk" data-rec="' + l.id + '">' + (l.rec ? '추천 해제' : '추천') + '</button><button class="lnk danger" data-del="' + l.id + '">삭제</button></div>' +
@@ -206,16 +211,20 @@
     document.querySelectorAll('[data-delno]').forEach(function (b) { b.onclick = function () { delAsk = null; render(); }; });
     var fm = $('#lfm'); if (!fm) return;
     $('#fc').onclick = function () { editing = null; render(); };
+    $('#f_fmode').onchange = function () { var fl = $('#f_floor'); fl.hidden = !!this.value; if (this.value) fl.value = ''; };
     $('#f_cid').onchange = function () { var c = cx(+this.value); if (c.ap) $('#f_approval').value = c.ap; };
     fm.addEventListener('submit', async function (e) {
       e.preventDefault();
       var g = function (k) { return $('#f_' + k).value.trim(); }, n = function (k) { return +g(k); };
-      var need = [['bldg', '동'], ['price', '매매 금액'], ['area', '전용면적'], ['supply', '공급면적'], ['pyc', '평형 범주'], ['pyt', '평형 표기'], ['floor', '해당 층'], ['total', '총 층수'], ['moveIn', '입주가능일'], ['rooms', '방 개수'], ['baths', '욕실 수'], ['approval', '사용승인일'], ['parking', '주차대수'], ['mgmt', '관리비'], ['gap', '갭투 여부']];
+      var need = [['bldg', '동'], ['price', '매매 금액'], ['area', '전용면적'], ['supply', '공급면적'], ['pyc', '평형 범주'], ['pyt', '평형 표기'], ['total', '총 층수'], ['moveIn', '입주가능일'], ['rooms', '방 개수'], ['baths', '욕실 수'], ['approval', '사용승인일'], ['parking', '주차대수'], ['mgmt', '관리비'], ['gap', '갭투 여부']];
       var miss = need.filter(function (k) { return !g(k[0]); }).map(function (k) { return k[1]; });
       var er = $('#ferr');
+      var fmode = $('#f_fmode').value;
+      if (!fmode && !g('floor')) miss.unshift('해당 층');
       if (miss.length) { er.textContent = '다음 항목을 입력해 주세요: ' + miss.join(', '); er.hidden = false; return; }
-      if (n('floor') > n('total')) { er.textContent = '해당 층이 총 층수보다 클 수 없습니다. 층수를 확인해 주세요.'; er.hidden = false; return; }
-      var data = { cid: n('cid'), price: n('price'), area: n('area'), supply: n('supply'), pyc: g('pyc'), pyt: g('pyt'), floor: n('floor'), total: n('total'), moveIn: g('moveIn'), rooms: n('rooms'), baths: n('baths'), approval: g('approval'), parking: g('parking'), mgmt: n('mgmt'), dir: g('dir'), gap: g('gap'), tag: g('tag'), desc: g('desc'), school: g('school'), bldg: B.dong(g('bldg')), rec: $('#f_rec').checked };
+      if (!fmode && n('floor') > n('total')) { er.textContent = '해당 층이 총 층수보다 클 수 없습니다. 층수를 확인해 주세요.'; er.hidden = false; return; }
+      var data = { cid: n('cid'), price: n('price'), area: n('area'), supply: n('supply'), pyc: g('pyc'), pyt: g('pyt'), floor: fmode ? '' : n('floor'), flv: fmode, total: n('total'), moveIn: g('moveIn'), rooms: n('rooms'), baths: n('baths'), approval: g('approval'), parking: g('parking'), mgmt: n('mgmt'), dir: g('dir'), gap: g('gap'), tag: g('tag'), desc: g('desc'), school: g('school'), bldg: B.dong(g('bldg')), rec: $('#f_rec').checked,
+        wasFlv: editing !== 'new' && !!(S.listings.find(function (x) { return x.id === editing; }) || {}).flv };
       var saved = null, isNew = editing === 'new', id = editing;
       var ok = await run(async function () { saved = isNew ? await API.addL(data) : await API.saveL(id, data); }, isNew ? '매물을 등록했습니다' : '수정 내용을 저장했습니다');
       if (!ok) return;

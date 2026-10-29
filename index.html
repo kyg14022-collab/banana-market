@@ -285,7 +285,7 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
     return '<a class="card item" href="#listing-' + l.id + '" data-id="' + l.id + '">' +
       '<div class="ihead"><span class="iname">' + esc(l.cx) + ' ' + esc(ptxt(l)) + '</span><span class="pr">' + price(l) + '</span></div>' +
       (l.tag ? '<div class="tg">' + esc(l.tag) + '</div>' : '') +
-      '<div class="sub">' + (l.bldg ? esc(B.dong(l.bldg)) + ' · ' : '') + '전용 ' + l.area + '㎡ · ' + lvl(l) + ' ' + l.floor + '/' + l.total + '층 · ' + esc(l.dir) + '</div>' +
+      '<div class="sub">' + (l.bldg ? esc(B.dong(l.bldg)) + ' · ' : '') + '전용 ' + l.area + '㎡ · ' + B.floorTxt(l) + ' · ' + esc(l.dir) + '</div>' +
       '<div class="meta">' + tags(l) + '</div></a>';
   };
   var lbl = function (l) { return l.cx + (l.bldg ? ' ' + B.dong(l.bldg) : '') + ' · ' + l.deal + ' ' + price(l) + ' · ' + ptxt(l) + ' (전용 ' + l.area + '㎡)'; };
@@ -368,7 +368,7 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
   };
   var mini = function (l) {
     return '<button type="button" class="mini" data-go="' + l.id + '"><span><b>' + esc(l.cx) + ' ' + esc(ptxt(l)) + '</b>' +
-      '<span class="s">' + (l.bldg ? esc(B.dong(l.bldg)) + ' · ' : '') + '전용 ' + l.area + '㎡ · ' + lvl(l) + ' ' + l.floor + '/' + l.total + '층 · ' + esc(l.dir) + (regStr(l) ? ' · 확인 ' + regStr(l).slice(5) : '') + '</span></span>' +
+      '<span class="s">' + (l.bldg ? esc(B.dong(l.bldg)) + ' · ' : '') + '전용 ' + l.area + '㎡ · ' + B.floorTxt(l) + ' · ' + esc(l.dir) + (regStr(l) ? ' · 확인 ' + regStr(l).slice(5) : '') + '</span></span>' +
       '<span class="p">' + price(l) + '</span></button>';
   };
   var botText = function (t) { return { who: 'bot', html: esc(t) }; };
@@ -455,7 +455,7 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
       (rows.length ? '<div class="xl"><table class="xt"><thead><tr><th>단지</th><th>평형</th><th>층</th><th class="num">금액</th><th>확인일</th></tr></thead><tbody>' +
         rows.map(function (l) {
           return '<tr data-id="' + l.id + '"><td>' + esc(l.cx) + '</td><td>' + esc(ptxt(l)) +
-            '</td><td>' + l.floor + '/' + l.total + '</td><td class="num">' + price(l) + '</td><td style="white-space:nowrap">' + regStr(l).slice(2) + '</td></tr>';
+            '</td><td>' + esc(B.floorShort(l)) + '</td><td class="num">' + price(l) + '</td><td style="white-space:nowrap">' + regStr(l).slice(2) + '</td></tr>';
         }).join('') + '</tbody></table></div>' : '<div class="card sub">등록된 매물이 없습니다.</div>') + brokerCard();
     bindAI();
     bindTabs();
@@ -471,7 +471,7 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
       .concat(l.deal === '매매' && l.gap ? [['갭투 여부', l.gap === '갭투' ? '갭투 (임차인 있음)' : '입주 (실입주 가능)']] : [])
       .concat([['금액', price(l)], ['평형', ptxt(l)],
         ['면적', '전용 ' + l.area + '㎡ / 공급 ' + l.supply + '㎡ (공급 약 ' + py(l.supply) + '평)'],
-        ['층', lvl(l) + ' (해당 ' + l.floor + '층 / 총 ' + l.total + '층)'], ['입주가능일', l.moveIn],
+        ['층', B.floorDetail(l)], ['입주가능일', l.moveIn],
         ['방 / 욕실', l.rooms + '개 / ' + l.baths + '개'], ['사용승인일(준공)', l.approval], ['주차대수', l.parking],
         ['관리비', '월 약 ' + l.mgmt + '만원'], ['방향', l.dir]])
       .concat(l.school ? [['학군', l.school]] : []);

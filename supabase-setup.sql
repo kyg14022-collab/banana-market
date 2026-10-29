@@ -60,6 +60,15 @@ alter table public.listings add column if not exists school text;
 -- 동 (예: 101동) : 아파트 광고 명시사항
 alter table public.listings add column if not exists building text;
 
+-- 해당 층을 저층/중층/고층으로만 표시할 수 있게 (숫자 층 또는 저·중·고 중 하나는 꼭 있어야 함)
+alter table public.listings add column if not exists floor_level text check (floor_level in ('저층', '중층', '고층'));
+alter table public.listings alter column floor_no drop not null;
+do $$ begin
+  if not exists (select 1 from pg_constraint where conname = 'listings_floor_present') then
+    alter table public.listings add constraint listings_floor_present check (floor_no is not null or floor_level is not null);
+  end if;
+end $$;
+
 -- 마지막 확인일 : 관리자 화면의 "확인일 갱신" 버튼으로 바뀝니다 (처음에는 등록일과 같음)
 alter table public.listings add column if not exists checked_at timestamptz;
 update public.listings set checked_at = created_at where checked_at is null;
