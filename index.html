@@ -505,7 +505,7 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
         ['방 / 욕실', l.rooms + '개 / ' + l.baths + '개'], ['사용승인일(준공)', l.approval], ['주차대수', l.parking],
         ['관리비', '월 약 ' + l.mgmt + '만원'], ['방향', l.dir]])
       .concat(l.school ? [['학군', l.school]] : []);
-    var mapQ = c.a || ('서울 서초구 ' + (c.d || '') + ' ' + l.cx);
+    var mapQ = ((c.d || '') + ' ' + l.cx.replace(/\(.*?\)/g, '')).trim();   /* 단지명으로 찾기 (예: 반포동 아크로리버파크) */
     var mapUrl = 'https://map.naver.com/p/search/' + encodeURIComponent(mapQ.trim());
     document.title = l.cx + ' ' + l.deal + ' ' + price(l) + ' | ' + SITE;
     $('#app').innerHTML = '<a class="lnk" id="bk" href="#">← 목록으로</a>' +
