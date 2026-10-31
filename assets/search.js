@@ -193,5 +193,5 @@
     } catch (e) { return { type: 'error' }; }
   };
 
-  window.BMS = { intro: intro, parse: parse, apply: apply, chips: chips, empty: empty, clean: clean, askAI: askAI, used: used, LIMIT: LIMIT, MAXLEN: MAXLEN };
+  window.BMS = { intro: intro, parse: parse, apply: apply, chips: chips, empty: empty, clean: clean, askAI: askAI, used: used, vid: vid, LIMIT: LIMIT, MAXLEN: MAXLEN };
 })();

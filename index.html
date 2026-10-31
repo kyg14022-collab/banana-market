@@ -238,6 +238,17 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
     } catch (e) { toast(failMsg); }
   };
 
+  /* ---------- 방문 통계 (무작위 방문자 번호만 사용, 관리자 본인·검색 로봇은 세지 않음) ---------- */
+  var statOn = !!B.sb && !/bot|crawl|spider|slurp|yeti|headless|lighthouse|preview/i.test(navigator.userAgent);
+  if (statOn) B.sb.auth.getSession().then(function (r) { if (r && r.data && r.data.session) statOn = false; }, function () {});
+  var stat = function (kind, key) {
+    if (!statOn || demo || !key) return;
+    try { B.sb.rpc('stat_hit', { p_kind: kind, p_key: String(key), p_vid: window.BMS.vid() }).then(function () {}, function () {}); } catch (e) {}
+  };
+  var device = function () {
+    var u = navigator.userAgent;
+    return /Mobi|Android|iPhone|iPad|iPod/i.test(u) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(u)) ? 'mobile' : 'pc';
+  };
   var bandOf = function (l) { return B.band(l.price); };
   var match = function (l) {
     return (!F.cx || l.cx === F.cx) && (!F.area || B.pyOf(l) === F.area) &&
@@ -344,7 +355,7 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
     bindAI();
     bindTabs();
     $('#rs').onclick = function () { F = E(); G = E(); searched = false; home(); };
-    $('#srch').onclick = function () { F = Object.assign({}, G); searched = true; home(); var e = $('#res'); if (e) e.scrollIntoView({ behavior: 'smooth' }); };
+    $('#srch').onclick = function () { if (G.cx) stat('cx', G.cx); F = Object.assign({}, G); searched = true; home(); var e = $('#res'); if (e) e.scrollIntoView({ behavior: 'smooth' }); };
     $('#req').onclick = openReq;
     bindContact();
     bindItems();
@@ -389,6 +400,7 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
     }
     var head = note ? '<span style="color:var(--sub);font-size:14px">' + esc(note) + '</span>\n' : '';
     if (S.empty(f)) return { who: 'bot', html: head + esc('찾으시는 조건을 알아듣지 못했어요.\n단지, 평형, 금액처럼 조건을 적어 주세요.\n예) 잠원 20평대 30억 이하') };
+    (f.cx || []).forEach(function (n) { stat('cx', n); });
     var r = S.apply(f, L, C), list = r.list;
     var html = head + '검색 키워드<div class="cond">' + S.chips(f).map(function (c) { return '<span>' + esc(c) + '</span>'; }).join('') + '</div>';
     if (r.dropped.length) html += esc('“' + r.dropped.join('”, “') + '” 설명이 있는 매물은 없어서, 나머지 조건으로 찾았어요.') + '\n';
@@ -467,6 +479,7 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
 
   /* ---------- 매물 상세 ---------- */
   function detail(l) {
+    stat('listing', l.id);
     var c = C.find(function (x) { return x.n === l.cx; }) || { a: '', d: '' };
     var others = L.filter(function (x) { return x.cx === l.cx && x.deal === l.deal && x.id !== l.id; });
     var rows = [['소재지', [(l.addr || c.a || '서울 서초구 ' + c.d), l.cx, B.dong(l.bldg)].filter(Boolean).join(' ')], ['중개대상물 종류', '아파트'], ['거래형태', l.deal]]
@@ -529,6 +542,7 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
       var d = await B.loadData();
       C = d.C; L = d.L; BR = d.B; demo = d.demo;
       route();
+      stat('visit', device());
     } catch (e) {
       console.error(e);
       $('#app').innerHTML = hero() + '<div class="card state">매물 정보를 불러오지 못했습니다.<br>잠시 후 다시 시도해 주세요.<br><br><button class="btn inl" id="retry">다시 불러오기</button></div>';
