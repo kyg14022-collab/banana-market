@@ -100,6 +100,7 @@ select:focus{outline:0;box-shadow:0 0 0 3px var(--ring)}
 .chip{padding:10px 18px;border-radius:999px;border:0;background:var(--bg);cursor:pointer;font-weight:500;font-size:15px;min-height:44px}
 .chip.on{background:var(--pri);color:var(--pri-t);font-weight:600}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.grid>*{min-width:0}
+.grid .top2{margin-top:0}
 .acts{display:flex;flex-direction:column;gap:8px;margin-top:18px}
 
 table{width:100%;border-collapse:collapse}th,td{padding:13px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
@@ -169,7 +170,7 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
 .aimeta{display:flex;justify-content:space-between;gap:4px 12px;flex-wrap:wrap;font-size:13px;line-height:1.5;color:var(--sub);padding:0 8px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 :focus-visible{outline:3px solid var(--ring);outline-offset:2px}
-@media (max-width:420px){.grid{grid-template-columns:1fr}.pr{font-size:23px}}
+@media (max-width:420px){.grid{grid-template-columns:1fr}.grid .top2{margin-top:16px}.pr{font-size:23px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 @media (max-width:900px){.chatbox{padding:10px;gap:10px}.log{min-height:0;max-height:420px;padding:4px 2px}}
 /* 휴대폰: 첫 화면에서 바로 검색창이 보이도록 위쪽을 촘촘하게 */
@@ -225,7 +226,7 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
   var KAKAO = B.cfg.KAKAO || '', TEL = B.cfg.TEL || '', CAFE = B.cfg.CAFE || '', SITE = B.cfg.SITE_NAME || '반아나 마켓';
   var $ = function (s) { return document.querySelector(s); };
   var C = [], L = [], BR = {}, demo = false;
-  var E = function () { return { cx: '', area: '', band: '', age: '', hh: '', gap: '' }; };
+  var E = function () { return { dong: '', cx: '', area: '', band: '', age: '', hh: '', gap: '' }; };
   var F = E(), G = E(), searched = false, tab = 'cx', AF = { sort: 'new' };
 
   var toast = function (t) {
@@ -251,7 +252,7 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
   };
   var bandOf = function (l) { return B.band(l.price); };
   var match = function (l) {
-    return (!F.cx || l.cx === F.cx) && (!F.area || B.pyOf(l) === F.area) &&
+    return (!F.dong || (C.find(function (c) { return c.n === l.cx; }) || {}).d === F.dong) && (!F.cx || l.cx === F.cx) && (!F.area || B.pyOf(l) === F.area) &&
       (!F.band || bandOf(l) === F.band) &&
       (!F.age || B.ageOf(l, C) === F.age) && (!F.hh || B.hOf(l, C) === F.hh) && (!F.gap || l.gap === F.gap);
   };
@@ -335,12 +336,16 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
   };
 
   /* ---------- 첫 화면 (단지로 찾기 / 조건으로 찾기) ---------- */
+  var cxOpts = function () {
+    return opts(C.filter(function (c) { return !G.dong || c.d === G.dong; }).map(function (c) { return [c.n, c.n + ' (' + c.d + ')']; }), G.cx, G.dong ? G.dong + ' 전체 단지' : '전체 단지');
+  };
   function home() {
-    var filt = searched || F.cx || F.area || F.band || F.age || F.hh || F.gap;
+    var filt = searched || F.dong || F.cx || F.area || F.band || F.age || F.hh || F.gap;
     var res = filt ? L.filter(match) : L.filter(function (l) { return l.rec; }).slice(0, 4);
     $('#app').innerHTML = hero() + aiBox() + '<h2>직접 매물 찾기</h2>' + tabsHtml() +
       '<div class="card">' +
-      '<label for="fc" style="margin-top:0">단지명</label><select id="fc">' + opts(C.map(function (c) { return [c.n, c.n + ' (' + c.d + ')']; }), G.cx, '전체 단지') + '</select>' +
+      '<div class="grid"><div><label for="fd" style="margin-top:0">지역</label><select id="fd">' + opts([['반포동', '반포동'], ['잠원동', '잠원동']], G.dong, '반포동·잠원동 전체') + '</select></div>' +
+      '<div><label for="fc" class="top2">단지명</label><select id="fc">' + cxOpts() + '</select></div></div>' +
       '<div class="grid"><div><label for="fa">평형</label><select id="fa">' + opts(PY, G.area, '전체 평형') + '</select></div>' +
       '<div><label for="fb">금액대</label><select id="fb">' + opts(BANDS, G.band, '전체 금액') + '</select></div></div>' +
       '<label for="fg">갭투 여부</label><select id="fg">' + opts(GAP, G.gap, '전체') + '</select>' +
@@ -351,6 +356,11 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
       (res.length ? res.map(card).join('') : '<div class="card sub">' + (filt ? '조건에 맞는 매물이 없습니다. 직접 의뢰하시면 찾아봅니다.' : '등록된 추천 매물이 없습니다.') + '</div>') +
       letter() + contactBox() + cafeBox() + brokerCard();
     var on = function (id, k) { var e = $(id); if (e) e.onchange = function (ev) { G[k] = ev.target.value; }; };
+    $('#fd').onchange = function (ev) {
+      G.dong = ev.target.value;
+      if (G.cx && G.dong && (C.find(function (c) { return c.n === G.cx; }) || {}).d !== G.dong) G.cx = '';
+      $('#fc').innerHTML = cxOpts();
+    };
     on('#fc', 'cx'); on('#fa', 'area'); on('#fb', 'band'); on('#fg', 'gap');
     bindAI();
     bindTabs();
