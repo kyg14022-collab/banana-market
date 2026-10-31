@@ -138,14 +138,22 @@
   }
 
   /* ---------- 매물 관리 ---------- */
+  var fDong = '';
+  var cidOpts = function (sel) {
+    var list = S.complexes.filter(function (c) { return !fDong || c.d === fDong || c.id === sel; })
+      .slice().sort(function (a, b) { return a.n.localeCompare(b.n, 'ko'); });
+    return opts(list.map(function (c) { return [c.id, c.n + ' (' + c.d + ')']; }), sel);
+  };
   function listingForm() {
-    var first = S.complexes[0] || { id: '', ap: '' };
+    var first = S.complexes.filter(function (c) { return !fDong || c.d === fDong; }).sort(function (a, b) { return a.n.localeCompare(b.n, 'ko'); })[0] || S.complexes[0] || { id: '', ap: '' };
     var l = editing === 'new' ? { cid: first.id, price: '', area: '', supply: '', pyc: '', pyt: '', floor: '', total: '', moveIn: '', rooms: '', baths: '', approval: first.ap, parking: '', mgmt: '', dir: '남향', gap: '', tag: '', desc: '', school: '', bldg: '', rec: false }
       : S.listings.find(function (x) { return x.id === editing; });
     var f = function (id, lab, val, type, extra) { return '<div><label for="' + id + '">' + lab + '</label><input id="' + id + '" type="' + (type || 'text') + '" value="' + esc(val) + '"' + (extra || '') + '></div>'; };
     return '<form class="form" id="lfm" novalidate><h2>' + (editing === 'new' ? '새 매물 등록' : '매물 수정') + '</h2>' +
       '<div class="grid">' +
-      '<div class="span"><label for="f_cid">단지</label><select id="f_cid">' + opts(S.complexes.map(function (c) { return [c.id, c.n + ' (' + c.d + ')']; }), l.cid) + '</select></div>' +
+      '<div class="span"><label id="f_dl">지역 (단지 목록 좁히기)</label><div class="tabs seg" role="group" aria-labelledby="f_dl">' +
+        [['', '전체'], ['반포동', '반포'], ['잠원동', '잠원']].map(function (d) { return '<button type="button" class="tab' + (fDong === d[0] ? ' on' : '') + '" data-fdong="' + d[0] + '" aria-pressed="' + (fDong === d[0]) + '">' + d[1] + '</button>'; }).join('') + '</div>' +
+        '<label for="f_cid">단지</label><select id="f_cid">' + cidOpts(l.cid) + '</select></div>' +
       f('f_bldg', '동 (예: 101동)', l.bldg || '', 'text', ' maxlength="20" placeholder="101동"') +
       f('f_price', '매매 금액 (억, 예 25.5)', l.price, 'number', ' step="0.01" inputmode="decimal"') +
       f('f_area', '전용면적 (㎡)', l.area, 'number', ' step="0.01" inputmode="decimal"') +
@@ -213,6 +221,16 @@
     $('#fc').onclick = function () { editing = null; render(); };
     $('#f_fmode').onchange = function () { var fl = $('#f_floor'); fl.hidden = !!this.value; if (this.value) fl.value = ''; };
     $('#f_cid').onchange = function () { var c = cx(+this.value); if (c.ap) $('#f_approval').value = c.ap; };
+    document.querySelectorAll('[data-fdong]').forEach(function (b) {
+      b.onclick = function () {
+        fDong = b.dataset.fdong;
+        document.querySelectorAll('[data-fdong]').forEach(function (x) { var on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-pressed', on); });
+        var sel = $('#f_cid'), cur = cx(+sel.value), keep = !fDong || cur.d === fDong;
+        var first = keep ? cur : S.complexes.filter(function (c) { return c.d === fDong; }).sort(function (a, b) { return a.n.localeCompare(b.n, 'ko'); })[0];
+        sel.innerHTML = opts(S.complexes.filter(function (c) { return !fDong || c.d === fDong; }).slice().sort(function (a, b) { return a.n.localeCompare(b.n, 'ko'); }).map(function (c) { return [c.id, c.n + ' (' + c.d + ')']; }), first ? first.id : '');
+        if (first && !keep) sel.onchange();
+      };
+    });
     fm.addEventListener('submit', async function (e) {
       e.preventDefault();
       var g = function (k) { return $('#f_' + k).value.trim(); }, n = function (k) { return +g(k); };
