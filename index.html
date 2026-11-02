@@ -551,7 +551,10 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
   var UA = navigator.userAgent || '';
   var isIOS = /iPhone|iPad|iPod/i.test(UA) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   var isAndroid = /Android/i.test(UA);
-  var inKakao = /KAKAOTALK/i.test(UA), inNaver = /NAVER\(inapp/i.test(UA);
+  var inKakao = /KAKAOTALK/i.test(UA), inNaver = /NAVER\(inapp/i.test(UA), inSamsung = /SamsungBrowser/i.test(UA);
+  /* 삼성 인터넷은 설치하면 'Play 프로텍트: 안전하지 않은 앱'으로 막히는 일이 있어 크롬으로 안내합니다 */
+  var toChrome = isAndroid && (inSamsung || inKakao || inNaver);
+  var chromeUrl = 'intent://' + location.host + location.pathname + '#Intent;scheme=https;package=com.android.chrome;end';
   var installed = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
   var deferredInstall = null;
   function showInst() { return !installed && (!!deferredInstall || isIOS || isAndroid); }
@@ -565,7 +568,7 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
   if ('serviceWorker' in navigator) window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
   document.addEventListener('click', async function (e) {
     if (!e.target.closest || !e.target.closest('#inst')) return;
-    if (deferredInstall) {
+    if (deferredInstall && !toChrome) {
       var ev = deferredInstall; deferredInstall = null;
       ev.prompt();
       try { var r = await ev.userChoice; if (r && r.outcome !== 'accepted') { deferredInstall = null; } } catch (x) {}
@@ -576,14 +579,16 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
   });
   function openInstHelp() {
     var steps;
-    if (inKakao) steps = ['오른쪽 위 <b>⋮</b>(또는 <b>공유</b>) 버튼을 누르세요', '<b>다른 브라우저로 열기</b>를 누르세요', '열린 화면에서 <b>홈 화면에 앱 추가</b> 버튼을 다시 눌러 주세요'];
+    if (toChrome) steps = [(inSamsung ? '삼성 인터넷에서는 설치가 <b>안전하지 않은 앱</b>으로 막힐 수 있어요. ' : '') + '아래 <b>크롬으로 열기</b>를 누르세요', '크롬에서 열린 반아나 마켓의 <b>홈 화면에 앱 추가</b> 버튼을 다시 누르세요', '<b>설치</b>를 누르면 끝입니다'];
+    else if (inKakao) steps = ['오른쪽 위 <b>⋮</b>(또는 <b>공유</b>) 버튼을 누르세요', '<b>다른 브라우저로 열기</b>를 누르세요', '열린 화면에서 <b>홈 화면에 앱 추가</b> 버튼을 다시 눌러 주세요'];
     else if (inNaver) steps = ['아래쪽 <b>≡</b>(메뉴) 버튼을 누르세요', '<b>홈 화면에 추가</b>를 누르세요', '<b>추가</b>를 눌러 마무리하세요'];
     else if (isIOS) steps = ['사파리 아래쪽의 <b>공유</b> 버튼(네모에 위 화살표)을 누르세요', '목록을 내려 <b>홈 화면에 추가</b>를 누르세요', '오른쪽 위 <b>추가</b>를 누르면 끝입니다'];
     else steps = ['오른쪽 위 <b>⋮</b>(메뉴) 버튼을 누르세요', '<b>홈 화면에 추가</b> 또는 <b>앱 설치</b>를 누르세요', '<b>설치</b>(또는 <b>추가</b>)를 누르면 끝입니다'];
     var o = document.createElement('div'); o.className = 'ov';
     o.innerHTML = '<div class="sheet" role="dialog" aria-modal="true" aria-label="홈 화면에 앱 추가"><div class="top"><h2 style="margin:0">홈 화면에 앱 추가</h2><button class="lnk" id="x">닫기</button></div>' +
       '<p class="sub" style="margin:8px 0 0">휴대폰 홈 화면에 반아나 마켓 아이콘이 생겨, 앱처럼 바로 열 수 있어요.</p>' +
-      '<ol class="steps">' + steps.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ol></div>';
+      '<ol class="steps">' + steps.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ol>' +
+      (toChrome ? '<a class="btn" style="margin-top:14px" href="' + chromeUrl + '">크롬으로 열기</a>' : '') + '</div>';
     document.body.appendChild(o);
     var close = function () { o.remove(); };
     o.onclick = function (e) { if (e.target === o) close(); };
