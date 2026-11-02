@@ -342,7 +342,7 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
   };
   function home() {
     var filt = searched || F.dong || F.cx || F.area || F.band || F.age || F.hh || F.gap;
-    var res = filt ? L.filter(match) : L.filter(function (l) { return l.rec; }).slice(0, 4);
+    var res = filt ? L.filter(match) : L.filter(function (l) { return l.rec; }).slice(0, 3);   /* 추천 매물은 최대 3개만 */
     $('#app').innerHTML = hero() + aiBox() + '<h2>직접 매물 찾기</h2>' + tabsHtml() +
       '<div class="card">' +
       '<label id="fdl" style="margin-top:0">지역</label><div class="chips" role="group" aria-labelledby="fdl">' +

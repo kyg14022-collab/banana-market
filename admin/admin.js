@@ -44,6 +44,10 @@
   var fromC = function (r) { return { id: r.id, n: r.name, d: r.dong, h: r.households || 0, ap: r.approval_date || '', a: r.address || '' }; };
   var toC = function (c) { return { name: c.n, dong: c.d, households: c.h || null, approval_date: c.ap || null, address: c.a || null }; };
 
+  /* 추천 매물은 최대 3개까지 (첫 화면에도 3개까지만 보임) */
+  var REC_MAX = 3;
+  var recOthers = function (id) { return S.listings.filter(function (x) { return x.rec && x.id !== id; }).length; };
+
   /* ---------- 데이터 창구: 서버 또는 미리보기 ---------- */
   var nextId = 100;
   var API = LIVE ? {
@@ -175,7 +179,7 @@
       '<div class="span"><label for="f_tag">한 줄 설명 (목록에 표시)</label><input id="f_tag" maxlength="40" value="' + esc(l.tag) + '" placeholder="예: 한강 조망 · 올수리 · 즉시 입주"></div>' +
       '<div class="span"><label for="f_school">학군 (선택 · 상세 화면과 AI 검색에 쓰여요)</label><input id="f_school" maxlength="200" value="' + esc(l.school || '') + '" placeholder="예: OO초 배정 · OO중·OO고 도보권 · 학원가 셔틀"></div>' +
       '<div class="span"><label for="f_desc">중개사 설명 (상세 화면)</label><textarea id="f_desc" rows="5">' + esc(l.desc) + '</textarea></div>' +
-      '</div><label class="chk"><input type="checkbox" id="f_rec"' + (l.rec ? ' checked' : '') + '> 추천 매물로 첫 화면에 보이기</label>' +
+      '</div><label class="chk"><input type="checkbox" id="f_rec"' + (l.rec ? ' checked' : '') + '> 추천 매물로 첫 화면에 보이기 (최대 ' + REC_MAX + '개 · 다른 추천 ' + recOthers(editing === 'new' ? null : editing) + '개)</label>' +
       '<div id="ferr" class="err" hidden></div>' +
       '<div class="fbtns"><button class="btn" type="submit">' + (editing === 'new' ? '매물 등록하기' : '수정 내용 저장') + '</button><button class="btn g" type="button" id="fc">취소</button></div></form>';
   }
@@ -200,6 +204,7 @@
     document.querySelectorAll('[data-rec]').forEach(function (b) {
       b.onclick = async function () {
         var l = S.listings.find(function (x) { return x.id === +b.dataset.rec; }), v = !l.rec;
+        if (v && recOthers(l.id) >= REC_MAX) { toast('추천 매물은 최대 ' + REC_MAX + '개까지예요. 다른 추천을 먼저 해제해 주세요'); return; }
         if (await run(function () { return API.recL(l.id, v); }, v ? '추천 매물로 지정했습니다' : '추천을 해제했습니다')) { l.rec = v; render(); }
       };
     });
@@ -240,6 +245,7 @@
       var fmode = $('#f_fmode').value;
       if (!fmode && !g('floor')) miss.unshift('해당 층');
       if (miss.length) { er.textContent = '다음 항목을 입력해 주세요: ' + miss.join(', '); er.hidden = false; return; }
+      if ($('#f_rec').checked && !(editing !== 'new' && (S.listings.find(function (x) { return x.id === editing; }) || {}).rec) && recOthers(editing === 'new' ? null : editing) >= REC_MAX) { er.textContent = '추천 매물은 최대 ' + REC_MAX + '개까지예요. 다른 추천을 먼저 해제하거나 추천 체크를 풀어 주세요.'; er.hidden = false; return; }
       if (!fmode && n('floor') > n('total')) { er.textContent = '해당 층이 총 층수보다 클 수 없습니다. 층수를 확인해 주세요.'; er.hidden = false; return; }
       var data = { cid: n('cid'), price: n('price'), area: n('area'), supply: n('supply'), pyc: g('pyc'), pyt: g('pyt'), floor: fmode ? '' : n('floor'), flv: fmode, total: n('total'), moveIn: g('moveIn'), rooms: n('rooms'), baths: n('baths'), approval: g('approval'), parking: g('parking'), mgmt: n('mgmt'), dir: g('dir'), gap: g('gap'), tag: g('tag'), desc: g('desc'), school: g('school'), bldg: B.dong(g('bldg')), rec: $('#f_rec').checked,
         wasFlv: editing !== 'new' && !!(S.listings.find(function (x) { return x.id === editing; }) || {}).flv };
