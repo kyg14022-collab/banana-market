@@ -23,6 +23,10 @@
 <!-- <meta name="google-site-verification" content="여기에-값"> -->
 <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-title" content="반아나 마켓">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap">
@@ -147,6 +151,10 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
 .sheet .top{display:flex;justify-content:space-between;align-items:center;gap:10px}
 #toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--toast-bg);color:var(--toast-fg);padding:13px 20px;border-radius:16px;z-index:30;max-width:90%;font-size:15px;font-weight:500}
 .state{padding:40px 0;color:var(--sub)}
+.inst{display:inline-flex;align-items:center;gap:8px;margin:18px 0 0;min-height:48px;padding:12px 20px;font-size:16.5px;font-weight:700;box-shadow:inset 0 0 0 1.5px rgba(29,29,31,.12)}
+.inst svg{flex:none}
+.steps{margin:14px 0 4px;padding-left:1.3em;font-size:16px;line-height:1.75}
+.steps b{font-weight:700}
 .demo{margin:20px 0 0;padding:12px 14px;border-radius:14px;background:var(--ok);color:var(--ok-t);font-size:14.5px;line-height:1.5}
 .err{color:var(--r-fg);font-size:14px;margin-top:10px}
 
@@ -274,6 +282,7 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
   var hero = function () {
     return '<div class="hero"><p class="office">반포프로공인중개사사무소</p><h1>김준한 소장이 직접 확인한<br>반포·잠원 매물</h1>' +
       '<p class="lead">아래 검색하기로 지금 바로 매물을 확인하세요.</p>' +
+      (showInst() ? '<button class="btn ban inl inst" type="button" id="inst"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"></rect><path d="M12 7v7m-3-3 3 3 3-3"></path></svg>홈 화면에 앱 추가</button>' : '') +
       (demo ? '<div class="demo">지금은 샘플 화면입니다. 설명서대로 config.js에 서버 정보를 넣으면 실제 매물이 표시됩니다.</div>' : '') + '</div>';
   };
   var tabsHtml = function () {
@@ -536,6 +545,49 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
     $('#chat').addEventListener('click', function () { askKakao(inq(l)); });
     $('#cplink').onclick = function () { copyText(location.href, '이 매물 링크를 복사했습니다', '주소창의 주소를 직접 복사해 주세요'); };
     bindItems();
+  }
+
+  /* ---------- 홈 화면에 앱 추가 ---------- */
+  var UA = navigator.userAgent || '';
+  var isIOS = /iPhone|iPad|iPod/i.test(UA) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var isAndroid = /Android/i.test(UA);
+  var inKakao = /KAKAOTALK/i.test(UA), inNaver = /NAVER\(inapp/i.test(UA);
+  var installed = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  var deferredInstall = null;
+  function showInst() { return !installed && (!!deferredInstall || isIOS || isAndroid); }
+  function refreshInst() {
+    var b = $('#inst'), want = showInst();
+    if (b && !want) b.remove();
+    else if (!b && want) { var lead = document.querySelector('#app .hero .lead'); if (lead) { var t = document.createElement('div'); t.innerHTML = hero(); var nb = t.querySelector('#inst'); if (nb) lead.insertAdjacentElement('afterend', nb); } }
+  }
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); deferredInstall = e; refreshInst(); });
+  window.addEventListener('appinstalled', function () { installed = true; deferredInstall = null; refreshInst(); toast('홈 화면에 반아나 마켓 앱이 추가되었습니다'); });
+  if ('serviceWorker' in navigator) window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  document.addEventListener('click', async function (e) {
+    if (!e.target.closest || !e.target.closest('#inst')) return;
+    if (deferredInstall) {
+      var ev = deferredInstall; deferredInstall = null;
+      ev.prompt();
+      try { var r = await ev.userChoice; if (r && r.outcome !== 'accepted') { deferredInstall = null; } } catch (x) {}
+      refreshInst();
+      return;
+    }
+    openInstHelp();
+  });
+  function openInstHelp() {
+    var steps;
+    if (inKakao) steps = ['오른쪽 위 <b>⋮</b>(또는 <b>공유</b>) 버튼을 누르세요', '<b>다른 브라우저로 열기</b>를 누르세요', '열린 화면에서 <b>홈 화면에 앱 추가</b> 버튼을 다시 눌러 주세요'];
+    else if (inNaver) steps = ['아래쪽 <b>≡</b>(메뉴) 버튼을 누르세요', '<b>홈 화면에 추가</b>를 누르세요', '<b>추가</b>를 눌러 마무리하세요'];
+    else if (isIOS) steps = ['사파리 아래쪽의 <b>공유</b> 버튼(네모에 위 화살표)을 누르세요', '목록을 내려 <b>홈 화면에 추가</b>를 누르세요', '오른쪽 위 <b>추가</b>를 누르면 끝입니다'];
+    else steps = ['오른쪽 위 <b>⋮</b>(메뉴) 버튼을 누르세요', '<b>홈 화면에 추가</b> 또는 <b>앱 설치</b>를 누르세요', '<b>설치</b>(또는 <b>추가</b>)를 누르면 끝입니다'];
+    var o = document.createElement('div'); o.className = 'ov';
+    o.innerHTML = '<div class="sheet" role="dialog" aria-modal="true" aria-label="홈 화면에 앱 추가"><div class="top"><h2 style="margin:0">홈 화면에 앱 추가</h2><button class="lnk" id="x">닫기</button></div>' +
+      '<p class="sub" style="margin:8px 0 0">휴대폰 홈 화면에 반아나 마켓 아이콘이 생겨, 앱처럼 바로 열 수 있어요.</p>' +
+      '<ol class="steps">' + steps.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ol></div>';
+    document.body.appendChild(o);
+    var close = function () { o.remove(); };
+    o.onclick = function (e) { if (e.target === o) close(); };
+    o.querySelector('#x').onclick = close;
   }
 
   /* ---------- 직접 의뢰하기 팝업 ---------- */
