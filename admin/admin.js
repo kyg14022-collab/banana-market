@@ -8,7 +8,7 @@
 
   /* ---------- 상태 ---------- */
   var S = { broker: {}, complexes: [], listings: [] };
-  var view = 'loading', tab = 'list', editing = null, editingC = null, delAsk = null, flash = null, busy = false;
+  var view = 'loading', tab = 'list', editing = null, editingC = null, delAsk = null, delAskC = null, flash = null, busy = false;
   var $ = function (s) { return document.querySelector(s); };
   var today = function () { var t = new Date(); return t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0'); };
   var md = function (s) { var m = /^\d{4}-(\d{2})-(\d{2})/.exec(s || ''); return m ? m[1] + '.' + m[2] : ''; };
@@ -77,6 +77,7 @@
     delL: async function (id) { var r = await sb.from('listings').delete().eq('id', id).select(); if (r.error) throw r.error; if (!r.data || !r.data.length) throw { message: 'permission denied' }; },
     addC: async function (c) { var r = await sb.from('complexes').insert(toC(c)).select().single(); if (r.error) throw r.error; return fromC(r.data); },
     saveC: async function (id, c) { var r = await sb.from('complexes').update(toC(c)).eq('id', id).select().single(); if (r.error) throw r.error; return fromC(r.data); },
+    delC: async function (id) { var r = await sb.from('complexes').delete().eq('id', id).select(); if (r.error) throw r.error; if (!r.data || !r.data.length) throw { message: 'permission denied' }; },
     saveB: async function (b) { var r = await sb.from('broker').upsert({ id: 1, name: b.name, rep: b.rep, reg_no: b.reg, tel: b.tel, address: b.addr }).select().single(); if (r.error) throw r.error; }
   } : {
     session: async function () { return null; },
@@ -95,6 +96,7 @@
     delL: async function () {},
     addC: async function (c) { return Object.assign({}, c, { id: nextId++ }); },
     saveC: async function (id, c) { return Object.assign({}, c, { id: id }); },
+    delC: async function () {},
     saveB: async function () {}
   };
 
@@ -272,12 +274,28 @@
       '<div class="rows">' + S.complexes.map(function (x) {
         var cnt = S.listings.filter(function (l) { return l.cid === x.id; }).length;
         return '<div class="row"><div><div class="nm">' + esc(x.n) + '</div><div class="sub">' + esc(x.d) + ' · ' + (x.h ? x.h.toLocaleString() + '세대' : '세대수 미입력') + ' · ' + (x.ap ? '사용승인 ' + esc(x.ap) : '<b style="color:var(--r-fg)">사용승인일 미입력</b>') + '</div></div>' +
-          '<div class="sub">매물 ' + cnt + '건</div><div class="acts"><button class="lnk" data-cedit="' + x.id + '">수정</button></div></div>';
+          '<div class="sub">매물 ' + cnt + '건</div><div class="acts"><button class="lnk" data-cedit="' + x.id + '">수정</button><button class="lnk danger" data-cdel="' + x.id + '">삭제</button></div>' +
+          (delAskC === x.id ? '<div class="confirm" role="alert">' + esc(x.n) + ' 단지를 삭제하면 손님 화면의 단지 목록에서도 사라집니다.<button class="btn del" data-cdelok="' + x.id + '">삭제하기</button><button class="btn g" data-cdelno="1">취소</button></div>' : '') +
+          '</div>';
       }).join('') + '</div>';
   }
   function bindCx() {
     var nb = $('#cnew'); if (nb) nb.onclick = function () { editingC = 'new'; render(); window.scrollTo(0, 0); };
-    document.querySelectorAll('[data-cedit]').forEach(function (b) { b.onclick = function () { editingC = +b.dataset.cedit; render(); window.scrollTo(0, 0); }; });
+    document.querySelectorAll('[data-cedit]').forEach(function (b) { b.onclick = function () { editingC = +b.dataset.cedit; delAskC = null; render(); window.scrollTo(0, 0); }; });
+    document.querySelectorAll('[data-cdel]').forEach(function (b) {
+      b.onclick = function () {
+        var id = +b.dataset.cdel, cnt = S.listings.filter(function (l) { return l.cid === id; }).length;
+        if (cnt) { toast('이 단지에 등록된 매물 ' + cnt + '건이 있어 삭제할 수 없어요. 매물을 먼저 삭제해 주세요'); return; }
+        delAskC = id; render();
+      };
+    });
+    document.querySelectorAll('[data-cdelok]').forEach(function (b) {
+      b.onclick = async function () {
+        var id = +b.dataset.cdelok;
+        if (await run(function () { return API.delC(id); }, '단지를 삭제했습니다')) { S.complexes = S.complexes.filter(function (x) { return x.id !== id; }); delAskC = null; if (editingC === id) editingC = null; render(); }
+      };
+    });
+    document.querySelectorAll('[data-cdelno]').forEach(function (b) { b.onclick = function () { delAskC = null; render(); }; });
     var fm = $('#cfm'); if (!fm) return;
     $('#cc').onclick = function () { editingC = null; render(); };
     fm.addEventListener('submit', async function (e) {
@@ -316,7 +334,7 @@
     if (view === 'login') { login(); return; }
     var inner = tab === 'list' ? listView() : tab === 'cx' ? cxView() : brokerView();
     $('#app').innerHTML = shell(inner);
-    document.querySelectorAll('[data-tab]').forEach(function (t) { t.onclick = function () { tab = t.dataset.tab; editing = null; editingC = null; delAsk = null; render(); }; });
+    document.querySelectorAll('[data-tab]').forEach(function (t) { t.onclick = function () { tab = t.dataset.tab; editing = null; editingC = null; delAsk = null; delAskC = null; render(); }; });
     if (tab === 'list') bindList(); else if (tab === 'cx') bindCx(); else bindBroker();
     flash = null;
   }
