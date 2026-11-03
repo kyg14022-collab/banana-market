@@ -366,7 +366,7 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
   function home() {
     var filt = searched || F.dong || F.cx || F.area || F.band || F.age || F.hh || F.gap;
     var res = filt ? L.filter(match) : [];
-    $('#app').innerHTML = hero() + recBox() + aiBox() + '<h2>직접 매물 찾기</h2>' + tabsHtml() +
+    $('#app').innerHTML = hero() + recBox() + '<h2>직접 매물 찾기</h2>' + tabsHtml() +
       '<div class="card">' +
       '<label id="fdl" style="margin-top:0">지역</label><div class="chips" role="group" aria-labelledby="fdl">' +
       [['', '전체'], ['반포동', '반포'], ['잠원동', '잠원']].map(function (d) { return '<button type="button" class="chip' + (G.dong === d[0] ? ' on' : '') + '" data-dong="' + d[0] + '" aria-pressed="' + (G.dong === d[0]) + '">' + d[1] + '</button>'; }).join('') + '</div>' +
@@ -379,7 +379,7 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
       '<button class="lnk" id="rs">조건 초기화</button></div>' +
       (filt ? '<h2 id="res">검색 결과 ' + res.length + '건</h2>' +
         (res.length ? res.map(card).join('') : '<div class="card sub">조건에 맞는 매물이 없습니다. 직접 의뢰하시면 찾아봅니다.</div>') : '') +
-      letter() + contactBox() + cafeBox() + brokerCard();
+      aiBox() + letter() + contactBox() + cafeBox() + brokerCard();
     var on = function (id, k) { var e = $(id); if (e) e.onchange = function (ev) { G[k] = ev.target.value; }; };
     document.querySelectorAll('[data-dong]').forEach(function (b) {
       b.onclick = function () {
@@ -499,7 +499,7 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
       if (AF.sort === 'hi') return b.price - a.price;
       return a.price - b.price;
     });
-    $('#app').innerHTML = hero() + recBox() + aiBox() + '<h2>직접 매물 찾기</h2>' + tabsHtml() +
+    $('#app').innerHTML = hero() + recBox() + '<h2>직접 매물 찾기</h2>' + tabsHtml() +
       '<div class="card"><label style="margin-top:0">정렬</label><div class="chips">' +
       [['new', '최신 확인순'], ['hi', '금액 높은순'], ['lo', '금액 낮은순']].map(function (s) { return '<button type="button" class="chip' + (AF.sort === s[0] ? ' on' : '') + '" data-asort="' + s[0] + '">' + s[1] + '</button>'; }).join('') + '</div>' +
       '</div>' +
@@ -508,7 +508,7 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
         rows.map(function (l) {
           return '<tr data-id="' + l.id + '"><td>' + esc(l.cx) + '</td><td>' + esc(ptxt(l)) +
             '</td><td>' + esc(B.floorShort(l)) + '</td><td class="num">' + price(l) + '</td><td style="white-space:nowrap">' + regStr(l).slice(2) + '</td></tr>';
-        }).join('') + '</tbody></table></div>' : '<div class="card sub">등록된 매물이 없습니다.</div>') + brokerCard();
+        }).join('') + '</tbody></table></div>' : '<div class="card sub">등록된 매물이 없습니다.</div>') + aiBox() + brokerCard();
     bindAI();
     bindTabs();
     document.querySelectorAll('[data-asort]').forEach(function (c) { c.onclick = function () { AF.sort = c.dataset.asort; allView(); }; });
