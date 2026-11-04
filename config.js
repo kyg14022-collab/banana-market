@@ -8,7 +8,7 @@ window.APP_CONFIG = {
   SUPABASE_ANON_KEY: 'sb_publishable_PkHWD1OeDjd5CFrcpcRNQw_MxtC8RYP',   /* anon key 또는 publishable key (secret/service_role 키는 절대 넣지 마세요) */
 
   /* 손님 문의 연결 */
-  KAKAO: 'https://open.kakao.com/o/su2ZwGSi',
+  KAKAO: 'https://open.kakao.com/o/smOMuyVi',
   TEL: '010-4951-2233',
   CAFE: 'https://cafe.naver.com/banpobanana',   /* 반아나 네이버 카페 주소 */
 
