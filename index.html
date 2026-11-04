@@ -245,7 +245,7 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
   var $ = function (s) { return document.querySelector(s); };
   var C = [], L = [], BR = {}, demo = false;
   var E = function () { return { dong: '', cx: '', area: '', band: '', age: '', hh: '', gap: '' }; };
-  var F = E(), G = E(), searched = false, tab = 'cx', AF = { sort: 'new' };
+  var F = E(), G = E(), searched = false, tab = 'all', AF = { sort: 'new' };
 
   var toast = function (t) {
     var e = $('#toast'); e.textContent = t; e.hidden = false;
@@ -292,7 +292,7 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
       (demo ? '<div class="demo">지금은 샘플 화면입니다. 설명서대로 config.js에 서버 정보를 넣으면 실제 매물이 표시됩니다.</div>' : '') + '</div>';
   };
   var tabsHtml = function () {
-    return '<div class="tabs" role="tablist">' + [['cx', '단지로 찾기'], ['all', '매물 전체보기']].map(function (t) {
+    return '<div class="tabs" role="tablist">' + [['all', '매물 전체보기'], ['cx', '단지로 찾기']].map(function (t) {
       return '<button type="button" role="tab" aria-selected="' + (tab === t[0]) + '" class="tab' + (tab === t[0] ? ' on' : '') + '" data-tab="' + t[0] + '">' + t[1] + '</button>';
     }).join('') + '</div>';
   };
@@ -516,11 +516,12 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
         rows.map(function (l) {
           return '<tr data-id="' + l.id + '"><td>' + esc(l.cx) + '</td><td>' + esc(ptxt(l)) +
             '</td><td>' + esc(B.floorShort(l)) + '</td><td class="num">' + price(l) + '</td><td style="white-space:nowrap">' + regStr(l).slice(2) + '</td></tr>';
-        }).join('') + '</tbody></table></div>' : '<div class="card sub">등록된 매물이 없습니다.</div>') + aiBox() + brokerCard();
+        }).join('') + '</tbody></table></div>' : '<div class="card sub">등록된 매물이 없습니다.</div>') + aiBox() + letter() + contactBox() + cafeBox() + brokerCard();
     bindAI();
     bindTabs();
     document.querySelectorAll('[data-asort]').forEach(function (c) { c.onclick = function () { AF.sort = c.dataset.asort; allView(); }; });
     document.querySelectorAll('.xt tbody tr').forEach(function (r) { r.onclick = function () { go(r.dataset.id); }; });
+    bindContact();
     bindItems();
   }
 
