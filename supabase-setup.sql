@@ -186,6 +186,26 @@ drop policy if exists "ai_usage admin read" on public.ai_usage;
 create policy "ai_usage admin read" on public.ai_usage for select to authenticated using (public.is_admin());
 grant select on public.ai_usage to authenticated;
 
+-- 금액 변경 표시: 금액을 고치면 이전 금액과 바꾼 시각을 자동으로 남깁니다 (관리자 화면 ▲▼ 표시용)
+alter table public.listings add column if not exists prev_price numeric;
+alter table public.listings add column if not exists price_changed_at timestamptz;
+create or replace function public.listing_price_track()
+returns trigger
+language plpgsql
+set search_path = public
+as $$
+begin
+  if new.price is distinct from old.price then
+    new.prev_price := old.price;
+    new.price_changed_at := now();
+  end if;
+  return new;
+end;
+$$;
+drop trigger if exists listing_price_track on public.listings;
+create trigger listing_price_track before update on public.listings
+  for each row execute function public.listing_price_track();
+
 -- 방문 통계 ------------------------------------------------------------
 --   - 손님 브라우저의 무작위 방문자 번호만 씁니다 (이름·전화·IP 저장 안 함).
 --   - 같은 사람은 하루에 방문 1번, 같은 단지 검색 1번, 같은 매물 보기 1번으로만 셉니다.

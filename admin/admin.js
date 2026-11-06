@@ -32,7 +32,8 @@
   var fromL = function (r) {
     return { id: r.id, cid: r.complex_id, price: Number(r.price), area: Number(r.exclusive_area), supply: Number(r.supply_area), pyc: r.py_cat, pyt: r.py_text,
       floor: r.floor_no == null ? '' : r.floor_no, flv: r.floor_level || '', total: r.total_floors, moveIn: r.move_in, rooms: r.rooms, baths: r.baths, approval: r.approval_date || '', parking: r.parking,
-      mgmt: r.mgmt_fee, dir: r.direction, gap: r.gap || '', tag: r.tagline || '', desc: r.description || '', school: r.school || '', bldg: r.building || '', rec: !!r.recommended, reg: B.kstDate(r.checked_at || r.created_at) };
+      mgmt: r.mgmt_fee, dir: r.direction, gap: r.gap || '', tag: r.tagline || '', desc: r.description || '', school: r.school || '', bldg: r.building || '', rec: !!r.recommended, reg: B.kstDate(r.checked_at || r.created_at), ts: r.checked_at || r.created_at || '',
+      prev: r.prev_price == null ? null : Number(r.prev_price), pchg: r.price_changed_at ? B.kstDate(r.price_changed_at) : '' };
   };
   var toL = function (l) {
     return { complex_id: l.cid, deal: '매매', price: l.price, exclusive_area: l.area, supply_area: l.supply, py_cat: l.pyc, py_text: l.pyt,
@@ -185,22 +186,44 @@
       '<div id="ferr" class="err" hidden></div>' +
       '<div class="fbtns"><button class="btn" type="submit">' + (editing === 'new' ? '매물 등록하기' : '수정 내용 저장') + '</button><button class="btn g" type="button" id="fc">취소</button></div></form>';
   }
+  /* 목록 보기: 지역(전체/반포/잠원) · 정렬(최신 확인순/금액 높은순/낮은순) */
+  var lDong = '', lSort = 'new';
+  var seg = function (attr, items, cur, label) {
+    return '<div class="tabs seg" role="group" aria-label="' + label + '">' + items.map(function (d) {
+      return '<button type="button" class="tab' + (cur === d[0] ? ' on' : '') + '" ' + attr + '="' + d[0] + '" aria-pressed="' + (cur === d[0]) + '">' + d[1] + '</button>';
+    }).join('') + '</div>';
+  };
+  /* 금액을 고치면 이전 금액과 비교해 ▲(올림, 빨강) ▼(내림, 파랑) */
+  var pmark = function (l) {
+    if (l.prev == null || l.prev === l.price) return '';
+    var up = l.price > l.prev, t = '이전 ' + won(l.prev) + (l.pchg ? ' · ' + md(l.pchg) + ' 변경' : '');
+    return '<span class="pchg ' + (up ? 'up' : 'dn') + '" title="' + esc(t) + '"><span aria-hidden="true">' + (up ? '▲' : '▼') + '</span><span class="sr">' + (up ? '올림, ' : '내림, ') + esc(t) + '</span></span>';
+  };
   function listView() {
-    var rows = S.listings.slice().sort(function (a, b) { return (b.reg || '').localeCompare(a.reg || '') || b.id - a.id; });
+    var all = S.listings;
+    var rows = all.filter(function (l) { return !lDong || cx(l.cid).d === lDong; }).sort(function (a, b) {
+      if (lSort === 'hi') return b.price - a.price || b.id - a.id;
+      if (lSort === 'lo') return a.price - b.price || b.id - a.id;
+      return (b.ts || b.reg || '').localeCompare(a.ts || a.reg || '') || b.id - a.id;
+    });
     return (editing != null ? listingForm() : '') +
-      '<div class="head"><h2>등록된 매물 ' + rows.length + '건</h2>' + (editing == null ? '<button class="btn ban" type="button" id="new">새 매물 등록</button>' : '') + '</div>' +
+      '<div class="head"><h2>등록된 매물 ' + rows.length + '건' + (lDong ? ' <span class="sub" style="font-size:15px;font-weight:500">(전체 ' + all.length + '건)</span>' : '') + '</h2>' + (editing == null ? '<button class="btn ban" type="button" id="new">새 매물 등록</button>' : '') + '</div>' +
+      '<div class="lfilters">' + seg('data-ldong', [['', '전체'], ['반포동', '반포'], ['잠원동', '잠원']], lDong, '지역') +
+        seg('data-lsort', [['new', '최신순'], ['hi', '금액 높은순'], ['lo', '금액 낮은순']], lSort, '정렬') + '</div>' +
       (rows.length ? '<div class="rows">' + rows.map(function (l) {
         var c = cx(l.cid);
         return '<div class="row' + (flash === l.id ? ' hl' : '') + '"><div><div class="nm">' + esc(c.n) + (l.bldg ? ' ' + esc(B.dong(l.bldg)) : ' <span style="color:var(--r-fg);font-size:14px">동 미입력</span>') + ' ' + esc(l.pyt) + '</div>' +
           '<div class="sub">전용 ' + l.area + '㎡ · ' + esc(B.floorTxt(l)) + ' · ' + esc(l.dir) + (l.tag ? ' · ' + esc(l.tag) : '') + '</div>' +
           '<div style="margin-top:6px"><span class="tag t-m">매매</span>' + (l.gap ? '<span class="tag t-g">' + esc(l.gap) + '</span>' : '') + (l.rec ? '<span class="tag t-r">추천</span>' : '') + (l.reg ? '<span class="tag t-c">확인 ' + md(l.reg) + '</span>' : '') + '</div></div>' +
-          '<div class="pr">' + won(l.price) + '</div>' +
+          '<div class="pr">' + pmark(l) + won(l.price) + (l.prev != null && l.prev !== l.price ? '<div class="was">이전 ' + won(l.prev) + '</div>' : '') + '</div>' +
           '<div class="acts"><button class="lnk" data-touch="' + l.id + '"' + (l.reg === today() ? ' title="오늘 이미 확인했어요"' : '') + '>확인일 갱신</button><button class="lnk" data-edit="' + l.id + '">수정</button><button class="lnk" data-rec="' + l.id + '">' + (l.rec ? '추천 해제' : '추천') + '</button><button class="lnk danger" data-del="' + l.id + '">삭제</button></div>' +
           (delAsk === l.id ? '<div class="confirm" role="alert">이 매물을 삭제하면 손님 화면에서도 사라집니다.<button class="btn del" data-delok="' + l.id + '">삭제하기</button><button class="btn g" data-delno="1">취소</button></div>' : '') +
           '</div>';
-      }).join('') + '</div>' : '<div class="form sub">아직 등록된 매물이 없습니다. 새 매물 등록을 눌러 첫 매물을 올려 보세요.</div>');
+      }).join('') + '</div>' : '<div class="form sub">' + (all.length ? '이 지역에 등록된 매물이 없습니다.' : '아직 등록된 매물이 없습니다. 새 매물 등록을 눌러 첫 매물을 올려 보세요.') + '</div>');
   }
   function bindList() {
+    document.querySelectorAll('[data-ldong]').forEach(function (b) { b.onclick = function () { lDong = b.dataset.ldong; render(); }; });
+    document.querySelectorAll('[data-lsort]').forEach(function (b) { b.onclick = function () { lSort = b.dataset.lsort; render(); }; });
     var nb = $('#new'); if (nb) nb.onclick = function () { if (!S.complexes.length) { toast('먼저 단지 관리에서 단지를 추가해 주세요'); return; } editing = 'new'; delAsk = null; render(); window.scrollTo(0, 0); };
     document.querySelectorAll('[data-edit]').forEach(function (b) { b.onclick = function () { editing = +b.dataset.edit; delAsk = null; render(); window.scrollTo(0, 0); }; });
     document.querySelectorAll('[data-rec]').forEach(function (b) {
