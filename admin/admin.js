@@ -216,12 +216,19 @@
           '<div class="sub">전용 ' + l.area + '㎡ · ' + esc(B.floorTxt(l)) + ' · ' + esc(l.dir) + (l.tag ? ' · ' + esc(l.tag) : '') + '</div>' +
           '<div style="margin-top:6px"><span class="tag t-m">매매</span>' + (l.gap ? '<span class="tag t-g">' + esc(l.gap) + '</span>' : '') + (l.rec ? '<span class="tag t-r">추천</span>' : '') + (l.reg ? '<span class="tag t-c">확인 ' + md(l.reg) + '</span>' : '') + '</div></div>' +
           '<div class="pr">' + pmark(l) + won(l.price) + (l.prev != null && l.prev !== l.price ? '<div class="was">이전 ' + won(l.prev) + '</div>' : '') + '</div>' +
-          '<div class="acts"><button class="lnk" data-touch="' + l.id + '"' + (l.reg === today() ? ' title="오늘 이미 확인했어요"' : '') + '>확인일 갱신</button><button class="lnk" data-edit="' + l.id + '">수정</button><button class="lnk" data-rec="' + l.id + '">' + (l.rec ? '추천 해제' : '추천') + '</button><button class="lnk danger" data-del="' + l.id + '">삭제</button></div>' +
+          '<div class="acts"><button class="lnk" data-touch="' + l.id + '"' + (l.reg === today() ? ' title="오늘 이미 확인했어요"' : '') + '>확인일 갱신</button><button class="lnk" data-edit="' + l.id + '">수정</button><button class="lnk" data-share="' + l.id + '">공유 링크 복사</button><button class="lnk" data-rec="' + l.id + '">' + (l.rec ? '추천 해제' : '추천') + '</button><button class="lnk danger" data-del="' + l.id + '">삭제</button></div>' +
           (delAsk === l.id ? '<div class="confirm" role="alert">이 매물을 삭제하면 손님 화면에서도 사라집니다.<button class="btn del" data-delok="' + l.id + '">삭제하기</button><button class="btn g" data-delno="1">취소</button></div>' : '') +
           '</div>';
       }).join('') + '</div>' : '<div class="form sub">' + (all.length ? '이 지역에 등록된 매물이 없습니다.' : '아직 등록된 매물이 없습니다. 새 매물 등록을 눌러 첫 매물을 올려 보세요.') + '</div>');
   }
   function bindList() {
+    document.querySelectorAll('[data-share]').forEach(function (b) {
+      b.onclick = function () {
+        var u = 'https://banana-market.co.kr/m/' + b.dataset.share;
+        var ok = function () { toast('공유 링크를 복사했어요: ' + u); }, no = function () { toast('복사가 막혀 있어요. 직접 입력해 주세요: ' + u); };
+        try { navigator.clipboard.writeText(u).then(ok, no); } catch (e) { no(); }
+      };
+    });
     document.querySelectorAll('[data-ldong]').forEach(function (b) { b.onclick = function () { lDong = b.dataset.ldong; render(); }; });
     document.querySelectorAll('[data-lsort]').forEach(function (b) { b.onclick = function () { lSort = b.dataset.lsort; render(); }; });
     var nb = $('#new'); if (nb) nb.onclick = function () { if (!S.complexes.length) { toast('먼저 단지 관리에서 단지를 추가해 주세요'); return; } editing = 'new'; delAsk = null; render(); window.scrollTo(0, 0); };

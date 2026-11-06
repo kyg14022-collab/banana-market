@@ -560,7 +560,7 @@ th{width:34%;color:var(--sub);font-weight:500;font-size:15px}td{font-weight:500}
     var root = $('#app');
     bindTel(root, 'tel', 'telbox', 'cp');
     $('#chat').addEventListener('click', function () { askKakao(inq(l)); });
-    $('#cplink').onclick = function () { copyText(location.href, '이 매물 링크를 복사했습니다', '주소창의 주소를 직접 복사해 주세요'); };
+    $('#cplink').onclick = function () { copyText(location.origin + '/m/' + l.id, '이 매물 링크를 복사했습니다. 카페·카톡에 올리면 매물 정보가 미리보기로 나옵니다.', '주소창의 주소를 직접 복사해 주세요'); };
     bindItems();
   }
 

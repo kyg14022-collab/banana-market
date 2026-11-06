@@ -1,0 +1,29 @@
+# 매물 공유 페이지(m/<번호>.html) 자동 생성
+# 카페·카톡 링크 미리보기에 매물 정보가 나오도록, 매물이 바뀌면 페이지를 새로 만들어 올립니다.
+name: 매물 공유 페이지
+on:
+  schedule:
+    - cron: '*/20 * * * *'   # 20분마다 확인 (GitHub 사정에 따라 몇 분 늦어질 수 있음)
+  workflow_dispatch: {}       # Actions 화면에서 'Run workflow'로 바로 실행
+permissions:
+  contents: write
+concurrency:
+  group: share-pages
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node scripts/build-share.mjs
+      - name: 바뀐 페이지 올리기
+        run: |
+          git add -A m
+          if git diff --cached --quiet; then echo "바뀐 것 없음"; exit 0; fi
+          git config user.name "banana-market-bot"
+          git config user.email "banana-market-bot@users.noreply.github.com"
+          git commit -m "매물 공유 페이지 갱신"
+          git push
