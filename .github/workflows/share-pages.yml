@@ -19,6 +19,11 @@ jobs:
         with:
           node-version: 20
       - run: node scripts/build-share.mjs
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pillow==10.4.0
+      - run: python scripts/build-share-images.py
       - name: 바뀐 페이지 올리기
         run: |
           git add -A m

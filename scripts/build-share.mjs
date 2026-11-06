@@ -4,6 +4,7 @@
 // GitHub Actions(.github/workflows/share-pages.yml)가 주기적으로 실행합니다. 직접 실행: node scripts/build-share.mjs
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const SITE = 'https://banana-market.co.kr';
@@ -32,6 +33,7 @@ const byId = Object.fromEntries(cxs.map((c) => [c.id, c]));
 const dir = path.join(ROOT, 'm');
 fs.mkdirSync(dir, { recursive: true });
 const keep = new Set();
+const cards = [];   // 미리보기 그림 목록 (build-share-images.py 가 그림)
 let changed = 0;
 
 for (const l of ls) {
@@ -41,6 +43,10 @@ for (const l of ls) {
   const desc = [`전용 ${Number(l.exclusive_area)}㎡`, lvl(l), l.direction, l.gap === '입주' ? '입주 가능' : l.gap === '갭투' ? '임차인 있음(갭투)' : '', l.tagline]
     .filter(Boolean).join(' · ') + ` | ${c.dong || ''} · 반아나 마켓`;
   const target = `${SITE}/#listing-${l.id}`;
+  // 미리보기 그림: '반포써밋 34평' / '매매 38억' / 반아나 마켓. 내용이 바뀌면 파일 이름도 바뀌어 카페·카톡이 새 그림을 가져갑니다.
+  const line1 = [c.name, l.py_text].filter(Boolean).join(' '), line2 = `매매 ${won(Number(l.price))}`;
+  const img = `${l.id}-${crypto.createHash('md5').update(line1 + '|' + line2 + '|v1').digest('hex').slice(0, 8)}.png`;
+  cards.push({ file: img, line1, line2 });
   const html = `<!doctype html>
 <html lang="ko">
 <head>
@@ -54,7 +60,7 @@ for (const l of ls) {
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${SITE}/m/${l.id}">
-<meta property="og:image" content="${SITE}/assets/og-banner.png">
+<meta property="og:image" content="${SITE}/m/img/${img}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -75,4 +81,5 @@ for (const l of ls) {
 for (const f of fs.readdirSync(dir)) {
   if (/^\d+\.html$/.test(f) && !keep.has(f)) { fs.unlinkSync(path.join(dir, f)); changed++; }
 }
+fs.writeFileSync(path.join(ROOT, 'scripts', '.share-cards.json'), JSON.stringify(cards));
 console.log(`매물 ${ls.length}건, 바뀐 공유 페이지 ${changed}개`);
