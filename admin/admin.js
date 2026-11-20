@@ -187,7 +187,7 @@
       '<div class="fbtns"><button class="btn" type="submit">' + (editing === 'new' ? '매물 등록하기' : '수정 내용 저장') + '</button><button class="btn g" type="button" id="fc">취소</button></div></form>';
   }
   /* 목록 보기: 지역(전체/반포/잠원) · 정렬(최신 확인순/금액 높은순/낮은순) */
-  var lDong = '', lSort = 'new';
+  var lDong = '', lSort = 'new', lCid = '';
   var seg = function (attr, items, cur, label) {
     return '<div class="tabs seg" role="group" aria-label="' + label + '">' + items.map(function (d) {
       return '<button type="button" class="tab' + (cur === d[0] ? ' on' : '') + '" ' + attr + '="' + d[0] + '" aria-pressed="' + (cur === d[0]) + '">' + d[1] + '</button>';
@@ -201,14 +201,17 @@
   };
   function listView() {
     var all = S.listings;
-    var rows = all.filter(function (l) { return !lDong || cx(l.cid).d === lDong; }).sort(function (a, b) {
+    var rows = all.filter(function (l) { return (!lDong || cx(l.cid).d === lDong) && (!lCid || l.cid === +lCid); }).sort(function (a, b) {
       if (lSort === 'hi') return b.price - a.price || b.id - a.id;
       if (lSort === 'lo') return a.price - b.price || b.id - a.id;
       return (b.ts || b.reg || '').localeCompare(a.ts || a.reg || '') || b.id - a.id;
     });
     return (editing != null ? listingForm() : '') +
-      '<div class="head"><h2>등록된 매물 ' + rows.length + '건' + (lDong ? ' <span class="sub" style="font-size:15px;font-weight:500">(전체 ' + all.length + '건)</span>' : '') + '</h2>' + (editing == null ? '<button class="btn ban" type="button" id="new">새 매물 등록</button>' : '') + '</div>' +
+      '<div class="head"><h2>등록된 매물 ' + rows.length + '건' + (lDong || lCid ? ' <span class="sub" style="font-size:15px;font-weight:500">(전체 ' + all.length + '건)</span>' : '') + '</h2>' + (editing == null ? '<button class="btn ban" type="button" id="new">새 매물 등록</button>' : '') + '</div>' +
       '<div class="lfilters">' + seg('data-ldong', [['', '전체'], ['반포동', '반포'], ['잠원동', '잠원']], lDong, '지역') +
+        '<select id="l_cid" aria-label="단지로 찾기" class="lcx">' + opts([['', lDong ? lDong.slice(0, 2) + ' 전체 단지' : '전체 단지']].concat(
+          S.complexes.filter(function (c) { return !lDong || c.d === lDong; }).slice().sort(function (a, b) { return a.n.localeCompare(b.n, 'ko'); })
+            .map(function (c) { var n = all.filter(function (l) { return l.cid === c.id; }).length; return [c.id, c.n + ' (' + n + ')']; })), lCid) + '</select>' +
         seg('data-lsort', [['new', '최신순'], ['hi', '금액 높은순'], ['lo', '금액 낮은순']], lSort, '정렬') + '</div>' +
       (rows.length ? '<div class="rows">' + rows.map(function (l) {
         var c = cx(l.cid);
@@ -219,7 +222,7 @@
           '<div class="acts"><button class="lnk" data-touch="' + l.id + '"' + (l.reg === today() ? ' title="오늘 이미 확인했어요"' : '') + '>확인일 갱신</button><button class="lnk" data-edit="' + l.id + '">수정</button><button class="lnk" data-share="' + l.id + '">공유 링크 복사</button><button class="lnk" data-rec="' + l.id + '">' + (l.rec ? '추천 해제' : '추천') + '</button><button class="lnk danger" data-del="' + l.id + '">삭제</button></div>' +
           (delAsk === l.id ? '<div class="confirm" role="alert">이 매물을 삭제하면 손님 화면에서도 사라집니다.<button class="btn del" data-delok="' + l.id + '">삭제하기</button><button class="btn g" data-delno="1">취소</button></div>' : '') +
           '</div>';
-      }).join('') + '</div>' : '<div class="form sub">' + (all.length ? '이 지역에 등록된 매물이 없습니다.' : '아직 등록된 매물이 없습니다. 새 매물 등록을 눌러 첫 매물을 올려 보세요.') + '</div>');
+      }).join('') + '</div>' : '<div class="form sub">' + (all.length ? (lCid ? '이 단지에 등록된 매물이 없습니다.' : '이 지역에 등록된 매물이 없습니다.') : '아직 등록된 매물이 없습니다. 새 매물 등록을 눌러 첫 매물을 올려 보세요.') + '</div>');
   }
   function bindList() {
     document.querySelectorAll('[data-share]').forEach(function (b) {
@@ -229,7 +232,10 @@
         try { navigator.clipboard.writeText(u).then(ok, no); } catch (e) { no(); }
       };
     });
-    document.querySelectorAll('[data-ldong]').forEach(function (b) { b.onclick = function () { lDong = b.dataset.ldong; render(); }; });
+    document.querySelectorAll('[data-ldong]').forEach(function (b) {
+      b.onclick = function () { lDong = b.dataset.ldong; if (lCid && lDong && cx(+lCid).d !== lDong) lCid = ''; render(); };
+    });
+    var lc = $('#l_cid'); if (lc) lc.onchange = function () { lCid = this.value; render(); };
     document.querySelectorAll('[data-lsort]').forEach(function (b) { b.onclick = function () { lSort = b.dataset.lsort; render(); }; });
     var nb = $('#new'); if (nb) nb.onclick = function () { if (!S.complexes.length) { toast('먼저 단지 관리에서 단지를 추가해 주세요'); return; } editing = 'new'; delAsk = null; render(); window.scrollTo(0, 0); };
     document.querySelectorAll('[data-edit]').forEach(function (b) { b.onclick = function () { editing = +b.dataset.edit; delAsk = null; render(); window.scrollTo(0, 0); }; });
