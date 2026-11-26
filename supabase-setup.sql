@@ -206,6 +206,59 @@ drop trigger if exists listing_price_track on public.listings;
 create trigger listing_price_track before update on public.listings
   for each row execute function public.listing_price_track();
 
+-- 공유 링크 바로 만들기 ---------------------------------------------------
+--   매물을 등록·수정·삭제하면 GitHub에 "공유 페이지를 지금 만들어 줘"라고 바로 알립니다.
+--   GitHub 토큰은 이 파일에 넣지 않고, Supabase 금고(Vault)에 'github_share_token' 이름으로 따로 넣습니다.
+--   토큰이 없거나 알림이 실패해도 매물 저장은 그대로 됩니다 (1시간~몇 시간마다 도는 예약 작업이 대신 만듭니다).
+create extension if not exists pg_net with schema extensions;
+
+create or replace function public.share_pages_kick()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  tok text;
+begin
+  if tg_op = 'UPDATE' then
+    if tg_table_name = 'complexes' then
+      if new.name is not distinct from old.name then return null; end if;
+    elsif (new.price, new.py_text, new.building, new.complex_id, new.direction, new.gap, new.tagline,
+           new.exclusive_area, new.floor_no, new.floor_level, new.total_floors, new.deal)
+          is not distinct from
+          (old.price, old.py_text, old.building, old.complex_id, old.direction, old.gap, old.tagline,
+           old.exclusive_area, old.floor_no, old.floor_level, old.total_floors, old.deal) then
+      return null;                                  -- 확인일 갱신 등 미리보기와 상관없는 수정
+    end if;
+  end if;
+  begin
+    select decrypted_secret into tok from vault.decrypted_secrets where name = 'github_share_token' limit 1;
+    if tok is null then return null; end if;
+    perform net.http_post(
+      url := 'https://api.github.com/repos/kyg14022-collab/banana-market/actions/workflows/share-pages.yml/dispatches',
+      body := '{"ref":"main"}'::jsonb,
+      headers := jsonb_build_object(
+        'Authorization', 'Bearer ' || tok,
+        'Accept', 'application/vnd.github+json',
+        'X-GitHub-Api-Version', '2022-11-28',
+        'User-Agent', 'banana-market',
+        'Content-Type', 'application/json'));
+  exception when others then
+    null;                                           -- 알림이 실패해도 저장은 막지 않음
+  end;
+  return null;
+end;
+$$;
+revoke all on function public.share_pages_kick() from public, anon, authenticated;
+
+drop trigger if exists share_pages_kick on public.listings;
+create trigger share_pages_kick after insert or update or delete on public.listings
+  for each row execute function public.share_pages_kick();
+drop trigger if exists share_pages_kick on public.complexes;
+create trigger share_pages_kick after update on public.complexes
+  for each row execute function public.share_pages_kick();
+
 -- 방문 통계 ------------------------------------------------------------
 --   - 손님 브라우저의 무작위 방문자 번호만 씁니다 (이름·전화·IP 저장 안 함).
 --   - 같은 사람은 하루에 방문 1번, 같은 단지 검색 1번, 같은 매물 보기 1번으로만 셉니다.
